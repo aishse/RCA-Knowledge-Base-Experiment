@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 
 
-def grade(task_dir, candidate_code, timeout=120):
+def grade(task_dir, candidate_code, timeout=20):
 
     # verifies if iverilog is installed and available in the PATH
     if shutil.which("iverilog") is None:

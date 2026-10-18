@@ -1,0 +1,31 @@
+{
+  "seed": 0,
+  "A": [
+    "timing/Prob023_gray_code_counter",
+    "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+    "assignment/Prob022_synchronous_FIFO",
+    "arithmetic/Prob019_implement_full_subtractor_using_three_to_eight_decoder",
+    "timing/Prob027_settable_counter",
+    "assignment/Prob002_extraneous_items_sequence_detect",
+    "assignment/Prob004_continuous_input_sequence_detect2",
+    "assignment/Prob001_continuous_input_sequence_detect",
+    "arithmetic/Prob002_extraneous_items_sequence_detect",
+    "arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit",
+    "assignment/Prob030_simple_implementation_RAM",
+    "state_machine/Prob012_state_machine_overlapping_sequence_detection"
+  ],
+  "B": [
+    "arithmetic/Prob014_sequence_generator",
+    "arithmetic/Prob031_johnson_counter",
+    "assignment/Prob012_state_machine_overlapping_sequence_detection",
+    "timing/Prob003_non-overlapping_sequence_detect",
+    "state_machine/Prob003_non-overlapping_sequence_detect",
+    "timing/Prob016_odd-number_division_with_a_duty_cycle_of_half",
+    "timing/Prob002_extraneous_items_sequence_detect",
+    "timing/Prob026_simple_stopwatch",
+    "assignment/Prob007_data_accumulation_output",
+    "assignment/Prob024_multiplication_and_bitwise_operations",
+    "assignment/Prob031_johnson_counter",
+    "timing/Prob012_state_machine_overlapping_sequence_detection"
+  ]
+}

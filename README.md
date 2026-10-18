@@ -27,6 +27,61 @@ How to ensure the correct module is extracted from the prompt:
 
 using icarus-verilog to compile and run --> llm reasoning can be prone to hallucinations and for a golden 
 
+## Vaildating the taskset 
+
+I created `validate.py` to check which of the test problems are usable with Icarus Verilog 12 (the version from the Dockerfile).
+
+### Checks
+
+- **Golden check:** the reference design, used as the candidate, must pass its own testbench (0 mismatches).
+- **Buggy check:** the original buggy design must fail (otherwise the bug is invisible to the grader
+  and an agent could "solve" it by changing nothing).
+
+### First pass: 78 / 89 usable
+
+The 11 failures fell into two groups.
+
+**1. Validation artifact: helper modules (8 tasks)**
+
+| Task | Helper module | Error |
+|---|---|---|
+| arithmetic/Prob019_full_subtractor | `decoder_38` | Unknown module type |
+| arithmetic/Prob021_asynchronous_FIFO | `dual_port_RAM` | Unknown module type |
+| arithmetic/Prob022_synchronous_FIFO | `dual_port_RAM` | Unknown module type |
+| assignment/Prob021_asynchronous_FIFO | `dual_port_RAM` | Unknown module type |
+| assignment/Prob022_synchronous_FIFO | `dual_port_RAM` | Unknown module type |
+| timing/Prob018_comparison_of_three_inputs | `slave_mod` | Unknown module type |
+| timing/Prob021_asynchronous_FIFO | `dual_port_RAM` | Module declared twice |
+| timing/Prob022_synchronous_FIFO | `dual_port_RAM` | Module declared twice |
+
+These designs had a helper module that lives in the *candidate's* file
+(`buggy.sv`), not inside `RefModule`. The first golden check used `ref.sv` with
+`RefModule` renamed to `TopModule`, which either left the helper undefined or, where
+`ref.sv` also defines the helper, defined it twice.
+
+*Fix*: The golden candidate is now built from buggy.sv with only the buggy TopModule swapped for the correct one, so it matches what a perfect fix would look like. This resolved all 8 failures.
+
+**2. Benchmark issue: least common multiple (3 tasks, excluded)**
+
+`arithmetic/`, `assignment/` and `timing/Prob013_least_common_multiple`: the golden
+design compiles but **mismatches against an identical copy of itself** (389 of 399
+samples). A design compared with itself should never mismatch, so the testbench or
+reference was not usable under Icarus 12 on MacOS. `timing/Prob013`'s buggy design also fails to
+compile (`mcd_out is not a valid l-value`). All three were excluded.
+
+### Final: 86 / 89 usable 
+
+One buggy design (`timing/Prob022_synchronous_FIFO`) hangs the simulator in a
+zero-delay loop. It still counts as "buggy fails" via the grader's timeout, so the
+task is usable, but it's a reminder that grading needs a timeout.
+
+
+## Task Splitting
+Since A and B are **disjoint**, the straightforward method for splitting is to save all usable problems into a list, shuffle them randomly, and split the top $2n$ sets
+into sets of n each. I also added a summary output that shows the split across all categories.
+
+
+
 ### Installation guide: 
 ```bash
 brew install icarus-verilog
