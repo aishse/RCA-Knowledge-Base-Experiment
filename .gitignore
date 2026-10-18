@@ -1,0 +1,22 @@
+# secrets
+.env
+*.key
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# simulator outputs
+*.vcd
+*.vvp
+a.out
+
+# OS
+.DS_Store
+
+# scratch workspaces created during runs (trajectories are kept under results/)
+workspaces/
+ChipBench/
