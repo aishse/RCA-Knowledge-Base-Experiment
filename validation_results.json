@@ -1,0 +1,1341 @@
+{
+    "usable": [
+        {
+            "task": "arithmetic/Prob001_continuous_input_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 2,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has 2 mismatches. First mismatch occurred at time 200.\nHint: Total mismatched samples is 2 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 2 in 455 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 0 in 455 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob002_extraneous_items_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 8,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has 8 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 8 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 8 in 237 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 0 in 237 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob006_data_serial-to-parallel_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 74,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has 30 mismatches. First mismatch occurred at time 220.\nHint: Output 'data_b' has 68 mismatches. First mismatch occurred at time 220.\nHint: Total mismatched samples is 74 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 74 in 151 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_b' has no mismatches.\nHint: Total mismatched samples is 0 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 0 in 151 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob007_data_accumulation_output",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 306,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has 40 mismatches. First mismatch occurred at time 130.\nHint: Output 'valid_b' has 90 mismatches. First mismatch occurred at time 130.\nHint: Output 'data_out' has 294 mismatches. First mismatch occurred at time 140.\nHint: Total mismatched samples is 306 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 306 in 357 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 0 in 357 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob008_non-integer_data_width_conversion_24to128",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 132,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has 132 mismatches. First mismatch occurred at time 110.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 132 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 132 in 261 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 0 in 261 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob009_non-integer_data_width_conversion_8to12",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 96,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has 36 mismatches. First mismatch occurred at time 40.\nHint: Output 'data_out' has 96 mismatches. First mismatch occurred at time 40.\nHint: Total mismatched samples is 96 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 96 in 127 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 0 in 127 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 118,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has 118 mismatches. First mismatch occurred at time 120.\nHint: Total mismatched samples is 118 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 118 in 141 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 0 in 141 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 398,
+                "samples": 425,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:90: $finish called at 2126 (1ps)\nHint: Output 'S' has 368 mismatches. First mismatch occurred at time 10.\nHint: Output 'CO' has 226 mismatches. First mismatch occurred at time 40.\nHint: Total mismatched samples is 398 out of 425 samples\n\nSimulation finished at 2126 ps\nMismatches: 398 in 425 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 425,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:90: $finish called at 2126 (1ps)\nHint: Output 'S' has no mismatches.\nHint: Output 'CO' has no mismatches.\nHint: Total mismatched samples is 0 out of 425 samples\n\nSimulation finished at 2126 ps\nMismatches: 0 in 425 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob014_sequence_generator",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 198,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has 198 mismatches. First mismatch occurred at time 50.\nHint: Total mismatched samples is 198 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 198 in 405 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has no mismatches.\nHint: Total mismatched samples is 0 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 0 in 405 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob016_odd-number_division_with_a_duty_cycle_of_half",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 86,
+                "samples": 621,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 3106 (1ps)\nHint: Output 'clk_out7' has 86 mismatches. First mismatch occurred at time 125.\nHint: Total mismatched samples is 86 out of 621 samples\n\nSimulation finished at 3106 ps\nMismatches: 86 in 621 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 621,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 3106 (1ps)\nHint: Output 'clk_out7' has no mismatches.\nHint: Total mismatched samples is 0 out of 621 samples\n\nSimulation finished at 3106 ps\nMismatches: 0 in 621 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob017_arbitrary_fractional_frequency_division",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 144,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has 144 mismatches. First mismatch occurred at time 140.\nHint: Total mismatched samples is 144 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 144 in 2021 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 0 in 2021 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob019_implement_full_subtractor_using_three_to_eight_decoder",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 48,
+                "samples": 57,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 286 (1ps)\nHint: Output 'D' has 48 mismatches. First mismatch occurred at time 20.\nHint: Output 'Co' has no mismatches.\nHint: Total mismatched samples is 48 out of 57 samples\n\nSimulation finished at 286 ps\nMismatches: 48 in 57 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 57,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 286 (1ps)\nHint: Output 'D' has no mismatches.\nHint: Output 'Co' has no mismatches.\nHint: Total mismatched samples is 0 out of 57 samples\n\nSimulation finished at 286 ps\nMismatches: 0 in 57 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob021_asynchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 624,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has 624 mismatches. First mismatch occurred at time 560.\nHint: Total mismatched samples is 624 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 624 in 831 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 0 in 831 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob022_synchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 304,
+                "samples": 327,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:85: $finish called at 1636 (1ps)\nHint: Output 'wfull' has 6 mismatches. First mismatch occurred at time 410.\nHint: Output 'rempty' has 262 mismatches. First mismatch occurred at time 120.\nHint: Output 'rdata' has 294 mismatches. First mismatch occurred at time 170.\nHint: Total mismatched samples is 304 out of 327 samples\n\nSimulation finished at 1636 ps\nMismatches: 304 in 327 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 327,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:85: $finish called at 1636 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 327 samples\n\nSimulation finished at 1636 ps\nMismatches: 0 in 327 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob023_gray_code_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 380,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has 380 mismatches. First mismatch occurred at time 130.\nHint: Total mismatched samples is 380 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 380 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob024_multiplication_and_bitwise_operations",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 414,
+                "samples": 417,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:49: $finish called at 2086 (1ps)\nHint: Output 'B' has 414 mismatches. First mismatch occurred at time 20.\nHint: Total mismatched samples is 414 out of 417 samples\n\nSimulation finished at 2086 ps\nMismatches: 414 in 417 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 417,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:49: $finish called at 2086 (1ps)\nHint: Output 'B' has no mismatches.\nHint: Total mismatched samples is 0 out of 417 samples\n\nSimulation finished at 2086 ps\nMismatches: 0 in 417 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob025_pulse_synchronization_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 939,
+                "samples": 1009,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:71: $finish called at 5046 (1ps)\nHint: Output 'data_out' has 939 mismatches. First mismatch occurred at time 155.\nHint: Total mismatched samples is 939 out of 1009 samples\n\nSimulation finished at 5046 ps\nMismatches: 939 in 1009 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1009,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:71: $finish called at 5046 (1ps)\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 1009 samples\n\nSimulation finished at 5046 ps\nMismatches: 0 in 1009 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob028_up_and_down_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 230,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has 230 mismatches. First mismatch occurred at time 120.\nHint: Output 'zero' has 54 mismatches. First mismatch occurred at time 200.\nHint: Total mismatched samples is 230 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 230 in 289 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 0 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 0 in 289 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob030_simple_implementation_RAM",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 376,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has 376 mismatches. First mismatch occurred at time 80.\nHint: Total mismatched samples is 376 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 376 in 427 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has no mismatches.\nHint: Total mismatched samples is 0 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 0 in 427 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob031_johnson_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 352,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has 352 mismatches. First mismatch occurred at time 100.\nHint: Total mismatched samples is 352 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 352 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob032_pipeline_multiplier",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 14,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has 14 mismatches. First mismatch occurred at time 130.\nHint: Total mismatched samples is 14 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 14 in 43 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 0 in 43 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob033_traffic_lights",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 458,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has 456 mismatches. First mismatch occurred at time 220.\nHint: Output 'red' has 120 mismatches. First mismatch occurred at time 870.\nHint: Output 'yellow' has 70 mismatches. First mismatch occurred at time 820.\nHint: Output 'green' has 190 mismatches. First mismatch occurred at time 820.\nHint: Total mismatched samples is 458 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 458 in 517 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'green' has no mismatches.\nHint: Total mismatched samples is 0 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 0 in 517 samples\n"
+            }
+        },
+        {
+            "task": "arithmetic/Prob034_gaming_machine_billing_program",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 334,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has 334 mismatches. First mismatch occurred at time 100.\nHint: Output 'yellow' has 44 mismatches. First mismatch occurred at time 540.\nHint: Output 'red' has 34 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 334 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 334 in 353 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Total mismatched samples is 0 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 0 in 353 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob001_continuous_input_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 4,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has 4 mismatches. First mismatch occurred at time 200.\nHint: Total mismatched samples is 4 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 4 in 455 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 0 in 455 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob002_extraneous_items_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 8,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has 8 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 8 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 8 in 237 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 0 in 237 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob003_non-overlapping_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 352,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has 90 mismatches. First mismatch occurred at time 330.\nHint: Output 'not_match' has 298 mismatches. First mismatch occurred at time 90.\nHint: Total mismatched samples is 352 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 352 in 1215 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Output 'not_match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 0 in 1215 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob004_continuous_input_sequence_detect2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 282,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has 282 mismatches. First mismatch occurred at time 60.\nHint: Total mismatched samples is 282 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 282 in 1044 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 0 in 1044 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob005_signal_generator",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 3164,
+                "samples": 6441,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 32206 (1ps)\nHint: Output 'wave' has 3164 mismatches. First mismatch occurred at time 390.\nHint: Total mismatched samples is 3164 out of 6441 samples\n\nSimulation finished at 32206 ps\nMismatches: 3164 in 6441 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 6441,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 32206 (1ps)\nHint: Output 'wave' has no mismatches.\nHint: Total mismatched samples is 0 out of 6441 samples\n\nSimulation finished at 32206 ps\nMismatches: 0 in 6441 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob006_data_serial-to-parallel_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 132,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has 24 mismatches. First mismatch occurred at time 100.\nHint: Output 'data_b' has 132 mismatches. First mismatch occurred at time 100.\nHint: Total mismatched samples is 132 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 132 in 151 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_b' has no mismatches.\nHint: Total mismatched samples is 0 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 0 in 151 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob007_data_accumulation_output",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 308,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has 32 mismatches. First mismatch occurred at time 140.\nHint: Output 'valid_b' has 68 mismatches. First mismatch occurred at time 140.\nHint: Output 'data_out' has 306 mismatches. First mismatch occurred at time 150.\nHint: Total mismatched samples is 308 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 308 in 357 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 0 in 357 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob008_non-integer_data_width_conversion_24to128",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 16,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has 16 mismatches. First mismatch occurred at time 210.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 16 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 16 in 261 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 0 in 261 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob009_non-integer_data_width_conversion_8to12",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 100,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has 32 mismatches. First mismatch occurred at time 60.\nHint: Output 'data_out' has 100 mismatches. First mismatch occurred at time 60.\nHint: Total mismatched samples is 100 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 100 in 127 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 0 in 127 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 118,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has 118 mismatches. First mismatch occurred at time 120.\nHint: Total mismatched samples is 118 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 118 in 141 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 0 in 141 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob011_4-bit_carry_look-ahead_adder_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 394,
+                "samples": 425,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:90: $finish called at 2126 (1ps)\nHint: Output 'S' has 394 mismatches. First mismatch occurred at time 10.\nHint: Output 'CO' has 68 mismatches. First mismatch occurred at time 80.\nHint: Total mismatched samples is 394 out of 425 samples\n\nSimulation finished at 2126 ps\nMismatches: 394 in 425 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 425,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:90: $finish called at 2126 (1ps)\nHint: Output 'S' has no mismatches.\nHint: Output 'CO' has no mismatches.\nHint: Total mismatched samples is 0 out of 425 samples\n\nSimulation finished at 2126 ps\nMismatches: 0 in 425 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob012_state_machine_overlapping_sequence_detection",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 14,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has 14 mismatches. First mismatch occurred at time 160.\nHint: Total mismatched samples is 14 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 14 in 153 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has no mismatches.\nHint: Total mismatched samples is 0 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 0 in 153 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob014_sequence_generator",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 266,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has 266 mismatches. First mismatch occurred at time 40.\nHint: Total mismatched samples is 266 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 266 in 405 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has no mismatches.\nHint: Total mismatched samples is 0 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 0 in 405 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob015_vending_machine2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 5,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has no mismatches.\nHint: Output 'out2' has no mismatches.\nHint: Output 'out3' has 5 mismatches. First mismatch occurred at time 300.\nHint: Total mismatched samples is 5 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 5 in 181 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has no mismatches.\nHint: Output 'out2' has no mismatches.\nHint: Output 'out3' has no mismatches.\nHint: Total mismatched samples is 0 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 0 in 181 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob016_odd-number_division_with_a_duty_cycle_of_half",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 172,
+                "samples": 621,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 3106 (1ps)\nHint: Output 'clk_out7' has 172 mismatches. First mismatch occurred at time 105.\nHint: Total mismatched samples is 172 out of 621 samples\n\nSimulation finished at 3106 ps\nMismatches: 172 in 621 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 621,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 3106 (1ps)\nHint: Output 'clk_out7' has no mismatches.\nHint: Total mismatched samples is 0 out of 621 samples\n\nSimulation finished at 3106 ps\nMismatches: 0 in 621 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob017_arbitrary_fractional_frequency_division",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 72,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has 72 mismatches. First mismatch occurred at time 130.\nHint: Total mismatched samples is 72 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 72 in 2021 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 0 in 2021 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob020_write_state_machine_two_stage",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 30,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:60: $finish called at 1306 (1ps)\nHint: Output 'flag' has 30 mismatches. First mismatch occurred at time 150.\nHint: Total mismatched samples is 30 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 30 in 261 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:60: $finish called at 1306 (1ps)\nHint: Output 'flag' has no mismatches.\nHint: Total mismatched samples is 0 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 0 in 261 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob021_asynchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 726,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has 20 mismatches. First mismatch occurred at time 1015.\nHint: Output 'rempty' has 702 mismatches. First mismatch occurred at time 530.\nHint: Output 'rdata' has 714 mismatches. First mismatch occurred at time 560.\nHint: Total mismatched samples is 726 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 726 in 831 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 0 in 831 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob022_synchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 210,
+                "samples": 327,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:85: $finish called at 1636 (1ps)\nHint: Output 'wfull' has 10 mismatches. First mismatch occurred at time 590.\nHint: Output 'rempty' has 52 mismatches. First mismatch occurred at time 590.\nHint: Output 'rdata' has 208 mismatches. First mismatch occurred at time 600.\nHint: Total mismatched samples is 210 out of 327 samples\n\nSimulation finished at 1636 ps\nMismatches: 210 in 327 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 327,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:85: $finish called at 1636 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 327 samples\n\nSimulation finished at 1636 ps\nMismatches: 0 in 327 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob023_gray_code_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 352,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has 352 mismatches. First mismatch occurred at time 150.\nHint: Total mismatched samples is 352 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 352 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob024_multiplication_and_bitwise_operations",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 414,
+                "samples": 417,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:49: $finish called at 2086 (1ps)\nHint: Output 'B' has 414 mismatches. First mismatch occurred at time 20.\nHint: Total mismatched samples is 414 out of 417 samples\n\nSimulation finished at 2086 ps\nMismatches: 414 in 417 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 417,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:49: $finish called at 2086 (1ps)\nHint: Output 'B' has no mismatches.\nHint: Total mismatched samples is 0 out of 417 samples\n\nSimulation finished at 2086 ps\nMismatches: 0 in 417 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob026_simple_stopwatch",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 9884,
+                "samples": 10021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:25: $finish called at 50106 (1ps)\nHint: Output 'second' has 9720 mismatches. First mismatch occurred at time 690.\nHint: Output 'minute' has 9882 mismatches. First mismatch occurred at time 700.\nHint: Total mismatched samples is 9884 out of 10021 samples\n\nSimulation finished at 50106 ps\nMismatches: 9884 in 10021 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 10021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:25: $finish called at 50106 (1ps)\nHint: Output 'second' has no mismatches.\nHint: Output 'minute' has no mismatches.\nHint: Total mismatched samples is 0 out of 10021 samples\n\nSimulation finished at 50106 ps\nMismatches: 0 in 10021 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob027_settable_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 38,
+                "samples": 273,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:46: $finish called at 1366 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has 38 mismatches. First mismatch occurred at time 100.\nHint: Total mismatched samples is 38 out of 273 samples\n\nSimulation finished at 1366 ps\nMismatches: 38 in 273 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 273,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:46: $finish called at 1366 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 0 out of 273 samples\n\nSimulation finished at 1366 ps\nMismatches: 0 in 273 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob028_up_and_down_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 268,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has 268 mismatches. First mismatch occurred at time 110.\nHint: Output 'zero' has 68 mismatches. First mismatch occurred at time 120.\nHint: Total mismatched samples is 268 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 268 in 289 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 0 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 0 in 289 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob030_simple_implementation_RAM",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 10,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has 10 mismatches. First mismatch occurred at time 310.\nHint: Total mismatched samples is 10 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 10 in 427 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has no mismatches.\nHint: Total mismatched samples is 0 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 0 in 427 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob031_johnson_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 348,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has 348 mismatches. First mismatch occurred at time 130.\nHint: Total mismatched samples is 348 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 348 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob032_pipeline_multiplier",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 10,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has 10 mismatches. First mismatch occurred at time 140.\nHint: Total mismatched samples is 10 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 10 in 43 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 0 in 43 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob033_traffic_lights",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 464,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has 464 mismatches. First mismatch occurred at time 120.\nHint: Output 'red' has 194 mismatches. First mismatch occurred at time 220.\nHint: Output 'yellow' has 80 mismatches. First mismatch occurred at time 820.\nHint: Output 'green' has 160 mismatches. First mismatch occurred at time 120.\nHint: Total mismatched samples is 464 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 464 in 517 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'green' has no mismatches.\nHint: Total mismatched samples is 0 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 0 in 517 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob034_gaming_machine_billing_program",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 4,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'red' has 4 mismatches. First mismatch occurred at time 580.\nHint: Total mismatched samples is 4 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 4 in 353 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Total mismatched samples is 0 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 0 in 353 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob003_non-overlapping_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 2,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has 2 mismatches. First mismatch occurred at time 1630.\nHint: Output 'not_match' has 2 mismatches. First mismatch occurred at time 1630.\nHint: Total mismatched samples is 2 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 2 in 1215 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Output 'not_match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 0 in 1215 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob004_continuous_input_sequence_detect2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 14,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has 14 mismatches. First mismatch occurred at time 1330.\nHint: Total mismatched samples is 14 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 14 in 1044 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 0 in 1044 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob012_state_machine_overlapping_sequence_detection",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 2,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has 2 mismatches. First mismatch occurred at time 280.\nHint: Total mismatched samples is 2 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 2 in 153 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has no mismatches.\nHint: Total mismatched samples is 0 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 0 in 153 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob015_vending_machine2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 13,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has 9 mismatches. First mismatch occurred at time 340.\nHint: Output 'out2' has 4 mismatches. First mismatch occurred at time 300.\nHint: Output 'out3' has 8 mismatches. First mismatch occurred at time 340.\nHint: Total mismatched samples is 13 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 13 in 181 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has no mismatches.\nHint: Output 'out2' has no mismatches.\nHint: Output 'out3' has no mismatches.\nHint: Total mismatched samples is 0 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 0 in 181 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob020_write_state_machine_two_stage",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 40,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:60: $finish called at 1306 (1ps)\nHint: Output 'flag' has 40 mismatches. First mismatch occurred at time 290.\nHint: Total mismatched samples is 40 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 40 in 261 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:60: $finish called at 1306 (1ps)\nHint: Output 'flag' has no mismatches.\nHint: Total mismatched samples is 0 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 0 in 261 samples\n"
+            }
+        },
+        {
+            "task": "state_machine/Prob033_traffic_lights",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 444,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has 394 mismatches. First mismatch occurred at time 220.\nHint: Output 'red' has 262 mismatches. First mismatch occurred at time 270.\nHint: Output 'yellow' has 178 mismatches. First mismatch occurred at time 220.\nHint: Output 'green' has 284 mismatches. First mismatch occurred at time 220.\nHint: Total mismatched samples is 444 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 444 in 517 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'green' has no mismatches.\nHint: Total mismatched samples is 0 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 0 in 517 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob001_continuous_input_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 4,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has 4 mismatches. First mismatch occurred at time 190.\nHint: Total mismatched samples is 4 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 4 in 455 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 455,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 2276 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 455 samples\n\nSimulation finished at 2276 ps\nMismatches: 0 in 455 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob002_extraneous_items_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 8,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has 8 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 8 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 8 in 237 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 237,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:63: $finish called at 1186 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 237 samples\n\nSimulation finished at 1186 ps\nMismatches: 0 in 237 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob003_non-overlapping_sequence_detect",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 403,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has 17 mismatches. First mismatch occurred at time 5.\nHint: Output 'not_match' has 387 mismatches. First mismatch occurred at time 5.\nHint: Total mismatched samples is 403 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 403 in 1215 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1215,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 6076 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Output 'not_match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1215 samples\n\nSimulation finished at 6076 ps\nMismatches: 0 in 1215 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob004_continuous_input_sequence_detect2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 65,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has 65 mismatches. First mismatch occurred at time 5.\nHint: Total mismatched samples is 65 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 65 in 1044 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1044,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:58: $finish called at 5221 (1ps)\nHint: Output 'match' has no mismatches.\nHint: Total mismatched samples is 0 out of 1044 samples\n\nSimulation finished at 5221 ps\nMismatches: 0 in 1044 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob005_signal_generator",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 2382,
+                "samples": 6441,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 32206 (1ps)\nHint: Output 'wave' has 2382 mismatches. First mismatch occurred at time 290.\nHint: Total mismatched samples is 2382 out of 6441 samples\n\nSimulation finished at 32206 ps\nMismatches: 2382 in 6441 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 6441,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:37: $finish called at 32206 (1ps)\nHint: Output 'wave' has no mismatches.\nHint: Total mismatched samples is 0 out of 6441 samples\n\nSimulation finished at 32206 ps\nMismatches: 0 in 6441 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob006_data_serial-to-parallel_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 28,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has 28 mismatches. First mismatch occurred at time 90.\nHint: Output 'data_b' has no mismatches.\nHint: Total mismatched samples is 28 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 28 in 151 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 151,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:62: $finish called at 756 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_b' has no mismatches.\nHint: Total mismatched samples is 0 out of 151 samples\n\nSimulation finished at 756 ps\nMismatches: 0 in 151 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob007_data_accumulation_output",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 260,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has 42 mismatches. First mismatch occurred at time 140.\nHint: Output 'valid_b' has 80 mismatches. First mismatch occurred at time 140.\nHint: Output 'data_out' has 248 mismatches. First mismatch occurred at time 150.\nHint: Total mismatched samples is 260 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 260 in 357 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 357,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:65: $finish called at 1786 (1ps)\nHint: Output 'ready_a' has no mismatches.\nHint: Output 'valid_b' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 357 samples\n\nSimulation finished at 1786 ps\nMismatches: 0 in 357 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob008_non-integer_data_width_conversion_24to128",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 53,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has 53 mismatches. First mismatch occurred at time 150.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 53 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 53 in 261 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 261,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:61: $finish called at 1306 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 261 samples\n\nSimulation finished at 1306 ps\nMismatches: 0 in 261 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob009_non-integer_data_width_conversion_8to12",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 88,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has 24 mismatches. First mismatch occurred at time 70.\nHint: Output 'data_out' has 88 mismatches. First mismatch occurred at time 60.\nHint: Total mismatched samples is 88 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 88 in 127 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 127,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 636 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 127 samples\n\nSimulation finished at 636 ps\nMismatches: 0 in 127 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 96,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has 96 mismatches. First mismatch occurred at time 230.\nHint: Total mismatched samples is 96 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 96 in 141 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 141,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:52: $finish called at 706 (1ps)\nHint: Output 'valid_out' has no mismatches.\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 141 samples\n\nSimulation finished at 706 ps\nMismatches: 0 in 141 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob012_state_machine_overlapping_sequence_detection",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 30,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has 30 mismatches. First mismatch occurred at time 150.\nHint: Total mismatched samples is 30 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 30 in 153 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 153,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:50: $finish called at 766 (1ps)\nHint: Output 'flag' has no mismatches.\nHint: Total mismatched samples is 0 out of 153 samples\n\nSimulation finished at 766 ps\nMismatches: 0 in 153 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob014_sequence_generator",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 198,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has 198 mismatches. First mismatch occurred at time 50.\nHint: Total mismatched samples is 198 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 198 in 405 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 405,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:26: $finish called at 2026 (1ps)\nHint: Output 'data' has no mismatches.\nHint: Total mismatched samples is 0 out of 405 samples\n\nSimulation finished at 2026 ps\nMismatches: 0 in 405 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob015_vending_machine2",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 55,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has 46 mismatches. First mismatch occurred at time 5.\nHint: Output 'out2' has 10 mismatches. First mismatch occurred at time 5.\nHint: Output 'out3' has 21 mismatches. First mismatch occurred at time 5.\nHint: Total mismatched samples is 55 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 55 in 181 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 181,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:70: $finish called at 906 (1ps)\nHint: Output 'out1' has no mismatches.\nHint: Output 'out2' has no mismatches.\nHint: Output 'out3' has no mismatches.\nHint: Total mismatched samples is 0 out of 181 samples\n\nSimulation finished at 906 ps\nMismatches: 0 in 181 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob016_odd-number_division_with_a_duty_cycle_of_half",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": null,
+                "samples": null,
+                "log": "Compilation failed:\nTopModule.sv:53: error: Unable to bind wire/reg/memory `rst_n' in `tb.top_module1'\nTopModule.sv:53: error: Unable to elaborate condition expression.\n2 error(s) during elaboration.\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 621,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 3106 (1ps)\nHint: Output 'clk_out7' has no mismatches.\nHint: Total mismatched samples is 0 out of 621 samples\n\nSimulation finished at 3106 ps\nMismatches: 0 in 621 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob017_arbitrary_fractional_frequency_division",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 318,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has 318 mismatches. First mismatch occurred at time 340.\nHint: Total mismatched samples is 318 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 318 in 2021 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 2021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:24: $finish called at 10106 (1ps)\nHint: Output 'clk_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 2021 samples\n\nSimulation finished at 10106 ps\nMismatches: 0 in 2021 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob018_submodules_to_implement_comparison_of_three_input_numbers",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 198,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:82: $finish called at 2106 (1ps)\nHint: Output 'd' has 198 mismatches. First mismatch occurred at time 70.\nHint: Total mismatched samples is 198 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 198 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:82: $finish called at 2106 (1ps)\nHint: Output 'd' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob021_asynchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 666,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has 56 mismatches. First mismatch occurred at time 1035.\nHint: Output 'rempty' has 42 mismatches. First mismatch occurred at time 500.\nHint: Output 'rdata' has 648 mismatches. First mismatch occurred at time 770.\nHint: Total mismatched samples is 666 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 666 in 831 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 831,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:98: $finish called at 4156 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 831 samples\n\nSimulation finished at 4156 ps\nMismatches: 0 in 831 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob022_synchronous_FIFO",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": null,
+                "samples": null,
+                "log": "Simulation timed out."
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 327,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:85: $finish called at 1636 (1ps)\nHint: Output 'wfull' has no mismatches.\nHint: Output 'rempty' has no mismatches.\nHint: Output 'rdata' has no mismatches.\nHint: Total mismatched samples is 0 out of 327 samples\n\nSimulation finished at 1636 ps\nMismatches: 0 in 327 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob023_gray_code_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 202,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has 202 mismatches. First mismatch occurred at time 100.\nHint: Total mismatched samples is 202 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 202 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:22: $finish called at 2106 (1ps)\nHint: Output 'gray_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob025_pulse_synchronization_circuit",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 119,
+                "samples": 1009,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:71: $finish called at 5046 (1ps)\nHint: Output 'data_out' has 119 mismatches. First mismatch occurred at time 40.\nHint: Total mismatched samples is 119 out of 1009 samples\n\nSimulation finished at 5046 ps\nMismatches: 119 in 1009 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 1009,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:71: $finish called at 5046 (1ps)\nHint: Output 'data_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 1009 samples\n\nSimulation finished at 5046 ps\nMismatches: 0 in 1009 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob026_simple_stopwatch",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 120,
+                "samples": 10021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:25: $finish called at 50106 (1ps)\nHint: Output 'second' has no mismatches.\nHint: Output 'minute' has 120 mismatches. First mismatch occurred at time 690.\nHint: Total mismatched samples is 120 out of 10021 samples\n\nSimulation finished at 50106 ps\nMismatches: 120 in 10021 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 10021,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:25: $finish called at 50106 (1ps)\nHint: Output 'second' has no mismatches.\nHint: Output 'minute' has no mismatches.\nHint: Total mismatched samples is 0 out of 10021 samples\n\nSimulation finished at 50106 ps\nMismatches: 0 in 10021 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob027_settable_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 242,
+                "samples": 273,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:46: $finish called at 1366 (1ps)\nHint: Output 'number' has 242 mismatches. First mismatch occurred at time 100.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 242 out of 273 samples\n\nSimulation finished at 1366 ps\nMismatches: 242 in 273 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 273,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:46: $finish called at 1366 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 0 out of 273 samples\n\nSimulation finished at 1366 ps\nMismatches: 0 in 273 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob028_up_and_down_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 90,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has 90 mismatches. First mismatch occurred at time 100.\nHint: Total mismatched samples is 90 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 90 in 289 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 289,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:40: $finish called at 1446 (1ps)\nHint: Output 'number' has no mismatches.\nHint: Output 'zero' has no mismatches.\nHint: Total mismatched samples is 0 out of 289 samples\n\nSimulation finished at 1446 ps\nMismatches: 0 in 289 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob030_simple_implementation_RAM",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 170,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has 170 mismatches. First mismatch occurred at time 70.\nHint: Total mismatched samples is 170 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 170 in 427 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 427,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:89: $finish called at 2136 (1ps)\nHint: Output 'read_data' has no mismatches.\nHint: Total mismatched samples is 0 out of 427 samples\n\nSimulation finished at 2136 ps\nMismatches: 0 in 427 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob031_johnson_counter",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 350,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has 350 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 350 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 350 in 421 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 421,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:23: $finish called at 2106 (1ps)\nHint: Output 'Q' has no mismatches.\nHint: Total mismatched samples is 0 out of 421 samples\n\nSimulation finished at 2106 ps\nMismatches: 0 in 421 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob032_pipeline_multiplier",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 18,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has 18 mismatches. First mismatch occurred at time 120.\nHint: Total mismatched samples is 18 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 18 in 43 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 43,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:38: $finish called at 216 (1ps)\nHint: Output 'mul_out' has no mismatches.\nHint: Total mismatched samples is 0 out of 43 samples\n\nSimulation finished at 216 ps\nMismatches: 0 in 43 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob033_traffic_lights",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 478,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has 474 mismatches. First mismatch occurred at time 120.\nHint: Output 'red' has 130 mismatches. First mismatch occurred at time 110.\nHint: Output 'yellow' has 228 mismatches. First mismatch occurred at time 820.\nHint: Output 'green' has 156 mismatches. First mismatch occurred at time 180.\nHint: Total mismatched samples is 478 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 478 in 517 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 517,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:48: $finish called at 2586 (1ps)\nHint: Output 'clock' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'green' has no mismatches.\nHint: Total mismatched samples is 0 out of 517 samples\n\nSimulation finished at 2586 ps\nMismatches: 0 in 517 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob034_gaming_machine_billing_program",
+            "buggy_passed": false,
+            "golden_passed": true,
+            "buggy_info": {
+                "mismatches": 24,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has no mismatches.\nHint: Output 'yellow' has 16 mismatches. First mismatch occurred at time 540.\nHint: Output 'red' has 19 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 24 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 24 in 353 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 0,
+                "samples": 353,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:64: $finish called at 1766 (1ps)\nHint: Output 'remain' has no mismatches.\nHint: Output 'yellow' has no mismatches.\nHint: Output 'red' has no mismatches.\nHint: Total mismatched samples is 0 out of 353 samples\n\nSimulation finished at 1766 ps\nMismatches: 0 in 353 samples\n"
+            }
+        }
+    ],
+    "unusable": [
+        {
+            "task": "arithmetic/Prob013_least_common_multiple",
+            "buggy_passed": false,
+            "golden_passed": false,
+            "buggy_info": {
+                "mismatches": 399,
+                "samples": 399,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:87: $finish called at 1996 (1ps)\nHint: Output 'lcm_out' has 399 mismatches. First mismatch occurred at time 5.\nHint: Output 'mcd_out' has 10 mismatches. First mismatch occurred at time 80.\nHint: Output 'vld_out' has 10 mismatches. First mismatch occurred at time 80.\nHint: Total mismatched samples is 399 out of 399 samples\n\nSimulation finished at 1996 ps\nMismatches: 399 in 399 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 389,
+                "samples": 399,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:87: $finish called at 1996 (1ps)\nHint: Output 'lcm_out' has 389 mismatches. First mismatch occurred at time 5.\nHint: Output 'mcd_out' has no mismatches.\nHint: Output 'vld_out' has no mismatches.\nHint: Total mismatched samples is 389 out of 399 samples\n\nSimulation finished at 1996 ps\nMismatches: 389 in 399 samples\n"
+            }
+        },
+        {
+            "task": "assignment/Prob013_least_common_multiple",
+            "buggy_passed": false,
+            "golden_passed": false,
+            "buggy_info": {
+                "mismatches": 399,
+                "samples": 399,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:87: $finish called at 1996 (1ps)\nHint: Output 'lcm_out' has 399 mismatches. First mismatch occurred at time 5.\nHint: Output 'mcd_out' has 10 mismatches. First mismatch occurred at time 80.\nHint: Output 'vld_out' has 380 mismatches. First mismatch occurred at time 50.\nHint: Total mismatched samples is 399 out of 399 samples\n\nSimulation finished at 1996 ps\nMismatches: 399 in 399 samples\n"
+            },
+            "golden_info": {
+                "mismatches": 389,
+                "samples": 399,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:87: $finish called at 1996 (1ps)\nHint: Output 'lcm_out' has 389 mismatches. First mismatch occurred at time 5.\nHint: Output 'mcd_out' has no mismatches.\nHint: Output 'vld_out' has no mismatches.\nHint: Total mismatched samples is 389 out of 399 samples\n\nSimulation finished at 1996 ps\nMismatches: 389 in 399 samples\n"
+            }
+        },
+        {
+            "task": "timing/Prob013_least_common_multiple",
+            "buggy_passed": false,
+            "golden_passed": false,
+            "buggy_info": {
+                "mismatches": null,
+                "samples": null,
+                "log": "Compilation failed:\nTopModule.sv:84: error: mcd_out is not a valid l-value in tb.top_module1.\nTopModule.sv:10:      : mcd_out is declared here as wire.\nTopModule.sv:86: error: mcd_out is not a valid l-value in tb.top_module1.\nTopModule.sv:10:      : mcd_out is declared here as wire.\n2 error(s) during elaboration.\n"
+            },
+            "golden_info": {
+                "mismatches": 389,
+                "samples": 399,
+                "log": "VCD info: dumpfile wave.vcd opened for output.\ntest.sv:87: $finish called at 1996 (1ps)\nHint: Output 'lcm_out' has 389 mismatches. First mismatch occurred at time 5.\nHint: Output 'mcd_out' has no mismatches.\nHint: Output 'vld_out' has no mismatches.\nHint: Total mismatched samples is 389 out of 399 samples\n\nSimulation finished at 1996 ps\nMismatches: 389 in 399 samples\n"
+            }
+        }
+    ]
+}
