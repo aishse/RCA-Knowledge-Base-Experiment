@@ -24,6 +24,9 @@ Need to ensure there is a proper split between set A and B of bug types
 How to ensure the correct module is extracted from the prompt: 
 - my assumption is that the very last code block provided is the buggy code. the rest is part of the prompt, and used by the llm to make their decisions on the next iteration of the code. 
 
+
+using icarus-verilog to compile and run --> llm reasoning can be prone to hallucinations and for a golden 
+
 ### Installation guide: 
 ```bash
 brew install icarus-verilog
