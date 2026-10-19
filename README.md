@@ -5,7 +5,7 @@ cheaper, or faster at fixing new hardware bugs? This repo runs Codex headless on
 debugging tasks from ChipBench, first with no memory (baseline) and then with an RCA
 knowledge base (KB) built on one set of tasks and evaluated, frozen, on a disjoint set.
 
-> **Status:** baseline in progress. KB design, results and discussion are TODO.
+> **Status:** complete. Baseline 17 / 24; with the case-library KB 17 / 24 (set A 7 → 8, set B 10 → 9). See [KB Results](#kb-results).
 
 ## Overview
 
@@ -24,13 +24,24 @@ report leans on qualitative comparison of trajectories alongside the metrics.
 
 ## Results
 
-TODO: baseline vs KB table (correctness, tokens, time) for set A and set B.
+| Condition | Set | Passed | Mean time | Mean input tokens | Mean output tokens |
+|---|---|---|---|---|---|
+| Baseline (no KB) | A | 7 / 12 | 39 s | 143k | 3.2k |
+| Baseline (no KB) | B | 10 / 12 | 45 s | 148k | 3.6k |
+| KB (case library) | A (mutable) | 8 / 12 | 41 s | 158k | 3.3k |
+| KB (case library) | B (frozen) | 9 / 12 | 44 s | 170k | 3.4k |
+| TODO: KB v2 | A (mutable) | | | | |
+| TODO: KB v2 | B (frozen) | | | | |
+
+One run per task. Input tokens include cached tokens (most of them).
 
 ## Quickstart
 
 ### Requirements
 
-- macOS (tested) with Python 3.11. The scripts use only the standard library.
+- macOS (tested) with Python 3.11 and `pip install -r requirements.txt` (`openai`, `python-dotenv`).
+- An OpenAI API key in a `.env` file in the repo root (`OPENAI_API_KEY=...`, git-ignored). It is used for
+  Codex and for KB embeddings.
 - **Icarus Verilog 12**, the version ChipBench pins in its Dockerfile (see
   [Simulator](#2-simulator-icarus-verilog-12) for why not 13). Build from source:
 
@@ -77,6 +88,9 @@ python3 scripts/split.py
 
 # 5. Baseline (no KB) on A and B -> results/baseline/
 caffeinate -i python3 scripts/run_experiment.py --mode baseline
+
+# 6. KB: A with a growing KB, freeze, then B with the frozen KB -> results/kb/
+caffeinate -i python3 scripts/run_experiment.py --mode kb
 ```
 
 `tasks/`, `validation_results.json` and `split.json` are committed, so steps 1–4 are
@@ -110,14 +124,18 @@ run_experiment.py ── for each task ──► run_codex.py
 │   ├── validate.py          # golden-passes / buggy-fails check for every task
 │   ├── split.py             # seeded A/B split
 │   ├── run_codex.py         # run Codex on one task in an isolated workspace
-│   └── run_experiment.py    # run a whole condition over A and B
+│   ├── kb.py                # KB records, embeddings, retrieval, prompt formatting
+│   └── run_experiment.py    # run a condition (baseline or kb) over A and B
 ├── tasks/<category>/<problem>/   # spec.txt, buggy.sv, ref.sv, test.sv
 ├── results/<condition>/<category>/<problem>/
 │   ├── trajectory.jsonl     # full Codex event stream (--json)
 │   ├── stderr.log
 │   ├── prompt.txt           # exact prompt used
 │   ├── TopModule.sv         # Codex's final RTL
-│   └── result.json          # pass/fail, mismatches, seconds, tokens, commands, leak flag
+│   ├── result.json          # pass/fail, mismatches, seconds, tokens, commands, leak flag
+│   └── retrieved.json       # (kb runs) which KB cases were retrieved, with scores
+├── results/kb/kb_A.jsonl     # the KB as it grew during phase A (one case per line)
+├── results/kb/kb_frozen.jsonl  # the frozen copy used for phase B
 ├── validation_results.json
 ├── split.json
 └── README.md
@@ -220,7 +238,7 @@ the task is usable, but it's a reminder that grading needs a timeout.
   `spec.txt` and `TopModule.sv`, so `ref.sv` and `test.sv` are never next to the agent.
 - **Default settings:** `codex exec --json --sandbox workspace-write --skip-git-repo-check`.
   `workspace-write` is the minimum needed to edit the file (the default is read-only).
-  TODO: Codex version and model (trajectories report `gpt-5.4`).
+  Codex CLI version 0.163.0, model `gpt-5.4`
 - **Prompt:** the same base prompt in every condition (`build_prompt()` only *appends* KB
   context), so the KB is the only difference between conditions. It names the two files,
   says Icarus is available, asks for an in-place fix that keeps the module interface, and
@@ -231,38 +249,394 @@ the task is usable, but it's a reminder that grading needs a timeout.
   `RefModule`, `ref.sv`, `chipagents_takehome` and `ChipBench`, and flagged in `result.json`.
   (Agents do wander: in the smoke test Codex ran `find .. -name AGENTS.md` on its parent directory.)
 
-## Early Observations
+## Baseline Analysis
 
-- **Correct root cause, wrong repair.** On `timing/Prob010` (8→16-bit width converter) Codex
-  correctly identified the bug (`data_r` stored in a combinational block, so the first byte was
-  overwritten) but then rewrote the module and added an extra pipeline stage, delaying the output
-  one cycle (72 mismatches). Its own testbench agreed with its fix, because it encoded Codex's
-  own reading of the spec: self-verification confirmed the interpretation, not the real behavior.
-- **Prompt framing matters.** With an early, vaguer prompt Codex rewrote the whole Gray-code
-  counter. With the final RCA-focused prompt it made the exact one-line fix
-  (`bin_out[0] = gray_wire[0]^bin_out[1]`). One run each, so suggestive only.
-- **Run-to-run variance.** The same Gray-code task took 47 s / 149k input tokens in the smoke
-  test and 81 s / 201k in the baseline. Small baseline-vs-KB differences may be noise.
+Codex (default settings, no KB) passed **17 / 24** tasks: **7 / 12 on A** and **10 / 12 on B**.
+All 24 trajectories passed the leak check. Total cost: 3.49M input tokens (mostly cached),
+82k output tokens, 17 minutes of agent time.
+
+| | Passing runs (17) | Failing runs (7) |
+|---|---|---|
+| Median time | 31 s | 39 s |
+| Median input tokens | 125k | 170k |
+| Median shell commands | 5 | 6 |
+| Median lines changed in `TopModule.sv` | **2** | **16** |
+
+By bug category: state machine 2/2, arithmetic 4/5, assignment 7/9, **timing 4/8**.
+
+### Failure modes
+
+Reading all 7 failing trajectories against the true fix (`buggy.sv` vs the golden design):
+
+| Task | Set | True bug | What Codex did | Mode |
+|---|---|---|---|---|
+| assignment/Prob001 sequence detect | A | wrong constant (`0111_0011` → `0111_0001`) | fixed the constant **and** compared the post-shift window | over-repair |
+| assignment/Prob002 extraneous items | A | wrong constant (`001` → `011`) | fixed the constant **and** shifted both comparison windows | over-repair |
+| arithmetic/Prob002 extraneous items | A | reversed shift direction | fixed the shift **and** compared the post-shift window | over-repair |
+| timing/Prob010 8→16 width converter | A | first byte held in `always @(*)` instead of a register | correct diagnosis, then rewrote the module with an extra pipeline stage | over-repair |
+| timing/Prob027 settable counter | A | `number` in `always @(*)` instead of a register | made `number` clocked **and** changed `zero`'s timing | over-repair |
+| timing/Prob002 extraneous items | B | match half computed combinationally instead of registered | rewrote detection on the post-shift window | over-repair |
+| timing/Prob012 overlapping FSM | B | `flag` in `always @(*)` instead of a register | changed `<=` to `=` in next-state logic (a style issue), missed the real bug | mis-localization |
+
+**1. The dominant failure is over-repair, not failure to find the bug.** In 6 of 7 failures
+Codex located the real root cause, usually fixing it correctly, then changed something
+else that was not broken. Failing fixes changed a median of 16 lines versus 2 for passing ones.
+
+**2. Self-verification does not catch it.** Codex writes and runs its own testbench in most
+runs, but that testbench encodes its own reading of the spec, so it confirms the wrong timing.
+On timing/Prob010 its summary reports the fix as verified; it fails with 72 mismatches.
+
+**3. Two recurring bug patterns.** "State held in `always @(*)` that should be clocked" is the
+true bug in timing/Prob010, timing/Prob027, timing/Prob002 and timing/Prob012, and Codex
+missed or over-repaired all four. The "extraneous items" sequence detector failed in all three
+of its variants (16 mismatches each), the same post-shift-window mistake every time.
+
+### Implications for the KB
+
+- **The repair discipline is the target.** A lesson like *"there is one injected bug; change only
+  the root cause and preserve every other signal's cycle timing"* directly addresses 6 of 7 failures.
+- **Learn from failures.** 5 of the 7 failures are in set A, so a KB built only from passing runs
+  would miss the main lesson. After grading an A task, the true fix is known (as in a real
+  post-mortem), so records can store what actually went wrong. Only set A's answers are used.
+  
+### Other observations
+
+- **Prompt framing matters.** With an early, vaguer prompt, Codex rewrote the whole Gray-code
+  counter; with the final RCA prompt it made the exact one-line fix in the smoke test. One run each,
+  so suggestive only.
+
 
 ## RCA Knowledge Base
 
-TODO: what is stored, how it is organized, how the agent retrieves it, how it is updated on A
-and frozen for B.
+### Design space
+
+The baseline showed that Codex usually *finds* the bug but over-repairs it (6 of 7 failures),
+and that both set-B failures share a design with a set-A task. I considered:
+
+| Idea | Data structure | Interface | Targets |
+|---|---|---|---|
+| Lessons playbook | short list of general rules | always in the prompt | over-repair |
+| **Case library (chosen)** | one post-mortem record per past task | **top-k retrieved into the prompt (RAG, push)** | seen designs, specific bug patterns |
+| Bug-pattern checklist | taxonomy of bug types seen in A | in the prompt | recurring patterns (e.g. state in `always @(*)`) |
+| `AGENTS.md` | rules file | Codex's native instruction file (trajectories show it looks for one) | over-repair |
+| Search tool / MCP | same case records | agent calls `kb_search` when it wants (pull) | scale |
+| Diff guardrail | statistics of past fixes | check run after editing | self-verification blind spot |
+| Testbench artifacts | reusable testbench templates | files in the workspace | tokens / time |
+
+**Why a case library with push retrieval:** case records with a confirmed root cause and fix are
+how production RCA knowledge bases are usually built (post-mortems of resolved bugs). Pushing the
+top 3 cases into the prompt guarantees the agent sees them, so the experiment measures the
+*content* of the KB rather than whether the agent chooses to use a tool. Retrieving only the top 3
+keeps the prompt size bounded as the KB grows, and a bad record only affects tasks similar enough
+to retrieve it. A pull interface (CLI or MCP tool) over the same records is the production-style
+next step; I left it out because it changes two things at once (content and interface) and the
+agent might never call it.
+
+### What a record stores
+
+After each set-A task is graded, `make_record` (`scripts/kb.py`) builds one case from the saved run:
+
+| Field | Source |
+|---|---|
+| `task`, `spec`, `buggy_code` | the task files |
+| `agent_summary` | Codex's final `SYMPTOM / ROOT CAUSE / FIX` message |
+| `passed`, `mismatches` | the grader |
+| `lines_changed` | diff of `buggy.sv` vs Codex's final `TopModule.sv` |
+| `true_fix`, `true_fix_lines` | diff of `buggy.sv` vs the golden design (built with `build_golden`) |
+| `failure_mode`, `touched_root_cause`, `extra_edits` | computed from the two diffs (below) |
+| `lesson` | one sentence, chosen by failure mode |
+| `embedding` | OpenAI embedding of `spec + buggy_code` |
+
+Records are written for **passing and failing** runs: 5 of the 7 baseline failures are in set A,
+so a KB built only from successes would miss the main lesson. Using the golden design for set-A
+tasks mirrors a real post-mortem, where the confirmed fix is known once the bug is resolved. No
+set-B answers are ever used.
+
+### Failure-mode classification
+
+Lessons state what happened rather than an assumed cause, so a wrong hypothesis can't spread
+through the KB. The lines removed by the true fix are the faulty lines; comparing them with the
+lines Codex removed gives:
+
+| Mode | Rule | Lesson (abridged) |
+|---|---|---|
+| `passed` | grader passed | "Fixed with an N-line change…", plus "a smaller fix targeting only the root cause would also have worked" if Codex changed lines the fix didn't need |
+| `missed_root_cause` | Codex touched none of the faulty lines | "Missed the root cause… see the confirmed fix" |
+| `over_repair` | touched the faulty lines **and** other lines | "Also changed N lines the fix did not need; those caused the mismatches. Change only the root cause." |
+| `wrong_fix` | touched only the faulty lines, still failed | "The change was incorrect. Compare with the confirmed fix." |
+
+On the 7 baseline failures this rule gives 6 `over_repair` and 1 `missed_root_cause`
+(`timing/Prob012`), matching a manual reading of every trajectory. A first version that compared
+total line counts (agent > 2× true fix) mislabeled 3 over-repairs as `wrong_fix`, because the
+reference's formatting inflates the true-fix line count.
+
+### Retrieval
+
+- **Embeddings:** OpenAI `text-embedding-3-small` on `spec + "\n\n" + buggy_code`, which is only what
+  the agent can see. Never the bug category or any grading file. Vectors are stored inline in each
+  record, so the frozen KB never needs re-embedding.
+- **Similarity:** cosine similarity between the new task's embedding and every record.
+- **Top k = 3**, no threshold and no deduplication.
+- I chose embeddings over keyword (TF-IDF) scoring because specs describe designs in prose. At 12
+  records any reasonable method finds the obvious matches.
+
+### Augmentation
+
+`format_cases` turns the retrieved records into a section appended to the unchanged base prompt
+(`build_prompt(kb_context)`):
+
+```
+## Past debugging cases (from a knowledge base of previously debugged designs)
+These cases may or may not be relevant to this task. Use them as hints, not as answers.
+
+### Case 1: <task> (outcome: PASS|FAIL)
+Agent's diagnosis: <Codex's summary, ≤1200 chars>
+Confirmed fix (diff of buggy -> correct): <true fix, ≤1200 chars>
+Lesson: <one sentence>
+```
+
+The spec, buggy code and embedding of past cases are not included. The exact prompt for every
+run is saved in `prompt.txt`, and the retrieved cases with scores in `retrieved.json`.
+
+### Protocol
+
+```
+Phase A (mutable): for each A task, in split.json order:
+    retrieve top 3 from kb_A.jsonl -> run Codex -> grade -> append a record
+Freeze:            copy kb_A.jsonl -> kb_frozen.jsonl
+Phase B (frozen):  for each B task: retrieve top 3 from kb_frozen.jsonl -> run Codex -> grade
+```
+
+The first A task sees an empty KB (same as the baseline), and each later A task can retrieve
+every earlier one. The run is resumable: finished tasks are skipped, and a finished A task that
+is missing from the KB is recorded on the next run.
+
+### Offline retrieval check
+
+Before any KB run, I embedded the 12 set-A *baseline* results and retrieved the top 3 for each
+set-B task (no Codex):
+
+```text
+arithmetic/Prob014_sequence_generator
+   0.868  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
+   0.855  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.854  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+arithmetic/Prob031_johnson_counter
+   0.858  timing/Prob027_settable_counter  (over_repair)
+   0.801  timing/Prob023_gray_code_counter  (passed)
+   0.798  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
+assignment/Prob012_state_machine_overlapping_sequence_detection
+   1.000  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
+   0.879  assignment/Prob004_continuous_input_sequence_detect2  (passed)
+   0.859  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+timing/Prob003_non-overlapping_sequence_detect
+   0.940  assignment/Prob004_continuous_input_sequence_detect2  (passed)
+   0.900  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.900  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+state_machine/Prob003_non-overlapping_sequence_detect
+   0.945  assignment/Prob004_continuous_input_sequence_detect2  (passed)
+   0.897  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.897  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+timing/Prob016_odd-number_division_with_a_duty_cycle_of_half
+   0.837  timing/Prob027_settable_counter  (over_repair)
+   0.820  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
+   0.812  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+timing/Prob002_extraneous_items_sequence_detect
+   0.997  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.997  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.902  assignment/Prob001_continuous_input_sequence_detect  (over_repair)
+timing/Prob026_simple_stopwatch
+   0.878  timing/Prob027_settable_counter  (over_repair)
+   0.820  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.820  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+assignment/Prob007_data_accumulation_output
+   0.892  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
+   0.815  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
+   0.814  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
+assignment/Prob024_multiplication_and_bitwise_operations
+   0.835  arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit  (passed)
+   0.795  timing/Prob027_settable_counter  (over_repair)
+   0.792  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
+assignment/Prob031_johnson_counter
+   0.858  timing/Prob027_settable_counter  (over_repair)
+   0.801  timing/Prob023_gray_code_counter  (passed)
+   0.797  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
+timing/Prob012_state_machine_overlapping_sequence_detection
+   0.997  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
+   0.876  assignment/Prob004_continuous_input_sequence_detect2  (passed)
+   0.858  assignment/Prob002_extraneous_items_sequence_detect  (over_repair) 
+```
+
+- **Seen designs find their counterpart almost perfectly:** `timing/Prob002` → both A
+  extraneous-items cases (0.997), `timing/Prob012` and `assignment/Prob012` →
+  `state_machine/Prob012` (0.997 / 1.000). The spec is identical and the code differs only at the
+  injected bug.
+- **Unseen designs get sensible neighbors:** sequence detectors → sequence detectors, counters →
+  counters, data accumulation → the width converter, multiplication → the adder.
+- **Scores are compressed (≈0.79–1.0)** because every spec is "a clocked Verilog module that does X",
+  so there is no natural similarity threshold.
+- **Redundancy:** set A contains two variants of the same design (extraneous items), and they fill 2
+  of the 3 slots for 8 of the 12 B tasks. I kept plain top 3 for simplicity and because the two
+  cases carry different bugs (see What I'd Do Next).
+- **Failure cases appear almost everywhere:** half of the A records are over-repair failures, so
+  nearly every B task sees an over-repair lesson. This is a property of *this* set A; a set A
+  with fewer failures would surface that lesson less often.
+
+## KB Results
+
+Same tasks, same prompt, same settings; the only difference is the retrieved cases appended to
+the prompt. One run per task per condition.
+
+| Set | Baseline | KB | Fixed by KB | Regressed with KB |
+|---|---|---|---|---|
+| A (KB growing) | 7 / 12 | 8 / 12 | timing/Prob010 | none |
+| **B (KB frozen)** | **10 / 12** | **9 / 12** | timing/Prob012 | timing/Prob003, assignment/Prob007 |
+| Total | 17 / 24 | 17 / 24 | | |
+
+| Set B | Baseline | KB |
+|---|---|---|
+| Seen designs (3 tasks share a design with A) | 1 / 3 | 2 / 3 |
+| Unseen designs (9 tasks) | 9 / 9 | 7 / 9 |
+| Mean time | 45 s | 44 s |
+| Mean input tokens | 148k | 170k (+15%, the retrieved cases) |
+| Mean output tokens | 3.6k | 3.4k |
+| Median lines changed | 4 | 2 |
+
+| Failure mode (all 24 tasks) | Baseline | KB |
+|---|---|---|
+| over_repair | 6 | 4 |
+| wrong_fix | 0 | 2 |
+| missed_root_cause | 1 | 1 |
+
+### What worked
+
+- **Smaller, more targeted edits.** Median lines changed fell from 10 to 5 on A and from 4 to 2 on B,
+  and over-repair failures fell from 6 to 4. This is the behavior the over-repair lessons ask for.
+  But two of the tasks that stopped over-repairing (`assignment/Prob001`, `timing/Prob003`) still
+  failed with a minimal *wrong* edit, so fewer extra edits did not translate into more passes.
+- **A seen design was fixed.** `timing/Prob012` failed in the baseline because Codex changed a style
+  issue and missed the real bug. With the KB it made exactly the true fix (`flag` moved from
+  `always @(*)` to a clocked block). Its top retrieved case was the same FSM from set A (0.997), but
+  that case's confirmed fix was a *different* line (the next-state logic), so the KB did not contain
+  this answer; the improvement may be variance.
+
+### What failed
+
+- **The KB propagated a wrong fix.** `timing/Prob002` (extraneous-items detector, a seen design)
+  retrieved both set-A variants of the same design (0.997). Both were over-repair failures, and the
+  "Agent's diagnosis" shown for each contained the same *incorrect* reasoning: compare the
+  just-shifted window `{a_tem[1:0], a}`. With the KB, Codex made exactly that edit and nothing else
+  (2 lines), and failed with the same 16 mismatches. The lesson said the extra edits were wrong but
+  not *which* edit, while the wrong edit was displayed prominently. Showing an unverified agent
+  diagnosis for a failed case is a design flaw: it can teach the mistake instead of the fix.
+- **Two regressions on unseen designs.** `assignment/Prob007` made the true fix *plus* an extra
+  change (removed `ready_b` from a condition), which is over-repair despite the lessons.
+  `timing/Prob003` took the same approach as its passing baseline run but missed by 1 sample out of
+  about 1,200. Both runs look like run-to-run variance rather than something the retrieved cases taught.
+- **No explicit use.** Codex never cited the retrieved cases in its messages or reasoning summaries,
+  so any influence is only visible through behavior (edit size, repeated edits).
+
+### How set A affects set B
+
+Half of set A's records are failures, so nearly every B task retrieved over-repair lessons. That
+plausibly drove the shift toward smaller edits. Set A also happened to contain *two* failed variants
+of the extraneous-items design with the same wrong diagnosis, so the only B task of that design
+retrieved a mistake twice and repeated it. A different set A, with a passing variant of that design
+or fewer duplicate designs, would have changed what B learned.
+
+### Conclusion
+
+With 12 tasks per set and one run per task, the case library did **not** improve correctness
+(17 / 24 in both conditions; set B 10 → 9). The individual flips (+2, −2) are within run-to-run
+variance. The two clear effects are a shift toward smaller edits, consistent with the over-repair
+lessons, and one concrete failure mode: a failed case that shows the agent's wrong diagnosis can
+propagate that error. The cost was about 15% more input tokens with no change in time.
+
+## KB v2: stop propagating unverified diagnoses
+
+### Motivation
+
+v1's clearest failure was error propagation (see [What failed](#what-failed)). For a failed case,
+v1 showed the agent's own diagnosis, which was wrong by definition, plus a generic lesson ("also
+changed N lines the fix did not need"). On `timing/Prob002`, Codex repeated the exact edit from that
+wrong diagnosis. The regression on `timing/Prob003` (a sequence detector that retrieved the same two
+failed cases) may have the same cause; the regression on `assignment/Prob007` shows no clear link.
+
+### Changes from v1
+
+Only what the agent reads changes. The base prompt, embeddings, retrieval (top 3, no
+deduplication), record fields and protocol are identical.
+
+| | v1 | v2 |
+|---|---|---|
+| Passing case | agent's diagnosis + confirmed fix + lesson | agent's diagnosis, labeled **verified**, + confirmed fix + lesson |
+| Failing case | agent's diagnosis + confirmed fix + lesson | confirmed fix + lesson only (**no unverified diagnosis**) |
+| Over-repair lesson | "also changed N lines the fix did not need" | names the exact lines that were already correct and should not be changed |
+
+Each record now also stores `unnecessary_edits`: the lines of the buggy design the agent changed
+that the confirmed fix did not need.
+
+**Principle:** the KB only shows the agent things that were verified, either by the grader
+(passing diagnoses) or by the confirmed fix. Unverified reasoning from failed attempts is never shown.
+
+### Hypothesis
+
+If error propagation caused v1's failures, v2 should:
+- stop repeating the wrong window edit on `timing/Prob002`,
+- not lose tasks that pass in the baseline (v1 lost `timing/Prob003` and `assignment/Prob007`),
+- keep v1's shift toward smaller edits, since the over-repair lessons remain and are more specific.
+
+### Protocol and disclosure
+
+v2 follows the same protocol as v1: run set A with a growing KB (rebuilt from scratch with the v2
+records), freeze, run set B. Results are in `results/kb_v2/`, and v1's results are kept unchanged in
+`results/kb/`. The code in `scripts/kb.py` is v2. v1's formatting is not kept in code, but the exact prompt
+of every v1 run (with its retrieved cases) is saved in `results/kb/<task>/prompt.txt`.
+
+**Disclosure:** v2 was designed after seeing v1's set-B results, so set B is no longer fully held out
+for v2. The change is motivated by a mechanism (the agent copying unverified reasoning), not by
+which tasks failed, and it applies to every case. A clean test would evaluate v1 and v2 on a fresh
+set of unused tasks (62 validated tasks remain).
+
+### Results
+
+TODO: v2 rows in the results table, task-level flips vs baseline and v1, failure modes, and whether
+`timing/Prob002` still repeats the wrong edit.
 
 ## Limitations & Known Issues
 
 - 12 tasks per set and one run per task: results are indicative, not statistically significant.
 - ChipBench bugs are small, single-module, hand-injected bugs, far simpler than real RTL RCA.
 - The leak check only inspects shell commands Codex runs.
-- TODO
+- **The harness assumes the injected bug is in `TopModule`,** not in helper modules in `buggy.sv`. This
+  holds for ChipBench (helpers match the spec-provided copies apart from whitespace and comments), but
+  not necessarily for other benchmarks. Because `RefModule` uses the candidate's helper modules in 6
+  tasks, an agent editing a helper could also change the reference's behavior.
+- **Retrieval is one-shot per task.** The KB is retrieved once from the initial spec and code, not
+  re-queried as the agent learns more during debugging.
+- **The KB depends on the order of set A** (one fixed seeded order), and on its mix of passes and failures.
 
 ## What I'd Do Next
 
-TODO
-
+- **Pull interface:** expose the same case store as a `kb_search` tool (CLI or MCP) and measure whether
+  and when the agent chooses to query it.
+- **Don't show unverified diagnoses from failed cases.** For a failed case, show only the confirmed fix
+  and *which* of the agent's edits were unnecessary, not the agent's own (wrong) reasoning. This is the
+  fix for the error propagation seen on `timing/Prob002`.
+- **Always-on lessons layer:** combine retrieved cases with a short set of general rules distilled from
+  set A, so the over-repair lesson reaches tasks with no close match.
+- **Robustness:** verify that non-`TopModule` modules in the agent's file are unchanged from `buggy.sv`.
+- **Vector storage at scale:** embeddings are stored inline in each JSONL record, which is
+  simple and makes freezing the KB a single file copy. At production scale I'd move them to
+  a vector database (e.g. FAISS or pgvector) for fast nearest-neighbor search and metadata
+  filtering, and keep the human-readable cases separate from the vectors.
+- **Diversity-aware retrieval:** some retrieved cases are redundant (same design, different bug). Limit
+  results to one case per design, or use MMR (maximal marginal relevance).
+- **Repeated runs:** several runs per task per condition, to separate the KB's effect from run-to-run variance.
+  
 ## AI Usage
 
-AI tools were allowed. TODO: one or two lines on how you used them.
+I used an AI assistant (Claude) as a planning and review partner: to discuss design options, explain unfamiliar tools (Icarus Verilog, Codex CLI), review my code, and draft parts of this README, which I edited. I wrote the scripts myself with its guidance, and every design decision (benchmark, task-disjoint split, case-library KB, failure-mode rule) was mine.
 
 ## Sources
 
@@ -276,4 +650,4 @@ AI tools were allowed. TODO: one or two lines on how you used them.
 
 ## Time Spent
 
-TODO
+~9–10 hours: ~2 h setup (Codex, building Icarus 12 from source), ~2 h import/grader/validation, ~1.5 h Codex runner and baseline, ~2.5 h KB design and implementation, ~1.5 h analysis and write-up.

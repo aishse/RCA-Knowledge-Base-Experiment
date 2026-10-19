@@ -69,6 +69,23 @@ def _fail(log):
     return False, {"mismatches": None, "samples": None, "log": log}
 
 
+def find_module(text, name):
+    """Find the block from 'module <name>' to its 'endmodule'."""
+    match = re.search(rf"module\s+{name}\b.*?endmodule", text, re.DOTALL)
+    if match is None:
+        raise ValueError(f"module {name} not found")
+    return match
+
+
+def build_golden(buggy, ref):
+    """buggy.sv with only its TopModule replaced by the correct RefModule.
+    Keeps any helper modules (e.g. dual_port_RAM) that buggy.sv defines."""
+    top = find_module(buggy, "TopModule")
+    ref_block = find_module(ref, "RefModule").group(0)
+    ref_block = ref_block.replace("RefModule", "TopModule", 1)
+    return buggy[: top.start()] + ref_block + buggy[top.end() :]
+
+
 if __name__ == "__main__":
     print("Running tests for grader.py...\n")
     print("Comparing golden to golden (should pass):")

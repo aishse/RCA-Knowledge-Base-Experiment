@@ -3,7 +3,7 @@ Validates taskset for gradeability. Ensures that each task performed is structur
 This script should be run after importing the ChipBench problems into the local task catalog using import_problems.py.
 """
 from pathlib import Path 
-from grader import grade
+from grader import grade, build_golden
 import json 
 import re
 
@@ -53,23 +53,6 @@ def validate_taskset(taskset_path):
     print(f"Unusable tasks: {len(unuseable_set)}")
     with open("validation_results.json", "w") as f:
         json.dump({"usable": useable_set, "unusable": unuseable_set}, f, indent=4)
-
-
-def find_module(text, name):
-    """Find the block from 'module <name>' to its 'endmodule'."""
-    match = re.search(rf"module\s+{name}\b.*?endmodule", text, re.DOTALL)
-    if match is None:
-        raise ValueError(f"module {name} not found")
-    return match
-
-
-def build_golden(buggy, ref):
-    """buggy.sv with only its TopModule replaced by the correct RefModule.
-    Keeps any helper modules (e.g. dual_port_RAM) that buggy.sv defines."""
-    top = find_module(buggy, "TopModule")
-    ref_block = find_module(ref, "RefModule").group(0)
-    ref_block = ref_block.replace("RefModule", "TopModule", 1)
-    return buggy[: top.start()] + ref_block + buggy[top.end() :]
 
 
 validate_taskset("tasks")

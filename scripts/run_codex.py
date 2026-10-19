@@ -25,7 +25,7 @@ from pathlib import Path
 
 from grader import grade
 
-def run_task(task_dir, out_dir, timeout=900):
+def run_task(task_dir, out_dir, timeout=900, kb_context=""):
     """
     Runs the specified task
 
@@ -45,7 +45,7 @@ def run_task(task_dir, out_dir, timeout=900):
         shutil.copy(task_dir / "spec.txt", tmp_dir / "spec.txt")
         shutil.copy(task_dir / "buggy.sv", tmp_dir / "TopModule.sv")
 
-        prompt = build_prompt()
+        prompt = build_prompt(kb_context)
 
         try:
             # run Codex with the prompt and the buggy TopModule.sv in a temporary directory
