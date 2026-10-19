@@ -1,7 +1,7 @@
 # RCA Knowledge Base for Hardware Debugging Agents
 
-> **Status:** complete. Baseline 17 / 24, case-library KB 15 / 24 (A 7 → 8, B 10 → 7).
-> **In this experiment, the KB did not help on the held-out set.** See [KB Results](#kb-results).
+> **Status:** complete. Baseline 15 / 24, case-library KB 15 / 24. **The KB did not measurably
+> change correctness**; two identical baseline runs differed on 4 of 12 set-B tasks. See [KB Results](#kb-results).
 
 ## Overview
 
@@ -22,10 +22,10 @@ report leans on qualitative comparison of trajectories alongside the metrics.
 
 | Condition | Set | Passed | Mean time | Mean input tokens | Mean output tokens |
 |---|---|---|---|---|---|
-| Baseline (no KB) | A | 7 / 12 | 39 s | 143k | 3.2k |
-| Baseline (no KB) | B | 10 / 12 | 45 s | 148k | 3.6k |
+| Baseline (no KB) | A | 7 / 12 | 38 s | 137k | 3.0k |
+| Baseline (no KB) | B | 8 / 12 | 40 s | 147k | 3.1k |
 | KB (mutable) | A | 8 / 12 | 39 s | 154k | 3.2k |
-| KB (frozen) | B | **7 / 12** | 42 s | 139k | 3.3k |
+| KB (frozen) | B | 7 / 12 | 42 s | 139k | 3.3k |
 
 One run per task. Input tokens include cached tokens (most of them). An earlier baseline run also
 showed set A passing 7/12 cases and set B passing 10/12 cases. 
@@ -75,7 +75,8 @@ Run every script from the repo root.
 
 ```bash
 # 1. Get the benchmark (pinned commit)
-git clone https://github.com/zhongkaiyu/ChipBench.git 
+git clone https://github.com/zhongkaiyu/ChipBench.git
+git -C ChipBench checkout b4ba3a0
 
 # 2. Import the 89 zero-shot debugging tasks into tasks/
 python3 scripts/import_problems.py "ChipBench/Verilog Debugging"
@@ -95,20 +96,19 @@ caffeinate -i python3 scripts/run_experiment.py --mode kb
 
 `tasks/`, `validation_results.json` and `split.json` are committed, so steps 1–4 are
 only needed to reproduce them. `run_experiment.py` skips tasks that already have a
-`result.json`, so an interrupted run can be resumed.
+`result.json`, so an interrupted run can be resumed. Results are committed, so to rerun a
+condition from scratch, move `results/<condition>/` aside first.
 
 ## How It Works
 
 ```
 ChipBench prompt.txt ──import──► tasks/<category>/<problem>/
-                                   
-        spec.txt    buggy.sv      (agent sees these)
-        ref.sv      test.sv       (hidden, grading only)
-                │
-validate.py ───────┤  golden passes? buggy fails?
-split.py ──────────┤  seeded, task-disjoint A / B
-                ▼
-
+                                   spec.txt    buggy.sv      (agent sees these)
+                                   ref.sv      test.sv       (hidden, grading only)
+                                        │
+                     validate.py ───────┤  golden passes? buggy fails?
+                     split.py ──────────┤  seeded, task-disjoint A / B
+                                        ▼
 run_experiment.py ── for each task ──► run_codex.py
     1. fresh temp workspace outside the repo: spec.txt + TopModule.sv (= buggy.sv)
     2. codex exec --json --sandbox workspace-write --skip-git-repo-check <prompt>
@@ -138,8 +138,11 @@ run_experiment.py ── for each task ──► run_codex.py
 │   └── retrieved.json       # (kb runs) which KB cases were retrieved, with scores
 ├── results/kb/kb_A.jsonl     # the KB as it grew during phase A (one case per line)
 ├── results/kb/kb_frozen.jsonl  # the frozen copy used for phase B
-├── validation_results.json
-├── split.json
+├── results/smoke/           # one-task smoke test of the runner
+├── validation_results.json   # usable / unusable tasks with grader logs
+├── split.json                # seed + A and B task lists
+├── requirements.txt
+├── .env                      # OPENAI_API_KEY (you create it; git-ignored)
 └── README.md
 ```
 
@@ -147,18 +150,20 @@ run_experiment.py ── for each task ──► run_codex.py
 
 ### 1. Benchmark: ChipBench zero-shot debugging
 
-- **ChipBench over HWE-Bench.** The HWE-Bench tasks xneed per-task Docker images and Verilator builds, which is too heavy. ChipBench tasks are small, self-contained, and graded in about a second.
+- **ChipBench over HWE-Bench.** The HWE-Bench tasks need per-task Docker images and Verilator builds, which is too heavy. ChipBench tasks are small, self-contained, and graded in about a second.
 - **Zero-shot over one-shot.** The one-shot prompts are the same bugs with a VCD waveform
   appended, and the waveform includes the *golden* outputs (e.g. `gray_out_ref`) next to the
-  buggy ones. The baseline could read the answer off the waveform, making a KB less useful for Codex. Codex is also able to simulate on it's own using Icarus.  
+  buggy ones. The baseline could read the answer off the waveform, making a KB less useful for Codex. Codex is also able to simulate on its own using Icarus.  
 
 ### 2. Simulator: Icarus Verilog 12
 
-ChipBench's Dockerfile builds Icarus from `v12-branch`. Homebrew installs ``v13``, so I had to build from a repository in order to ensure the grader could work on my computer. 
+ChipBench's Dockerfile builds Icarus from `v12-branch`. Homebrew installs v13, which rejects a forward reference in every ChipBench testbench
+(`tb_mismatch` is used in `$dumpvars` before it is declared). I built v12 from source to match the
+benchmark exactly instead of modifying the testbenches.
 
 ### 3. Extracting the buggy code
 
-Each ChipBench `*_prompt.txt` is a spec followed by fenced code. The **last** code block in spec is
+Each ChipBench `*_prompt.txt` is a spec followed by fenced code. The **last** code block in the prompt is
 always the buggy `TopModule`. Seven prompts (FIFOs, full subtractor) contain an extra block
 before it with a provided helper module, so "first block" would be wrong. Initially, using the marker sentence
 ("Based on the problem description above…") made sense as the split point. However, it has different wordings across the 89 prompts, so the
@@ -199,10 +204,12 @@ all 8 failures.
 **b) Benchmark issue: least common multiple (3 tasks, excluded)**
 
 `arithmetic/`, `assignment/` and `timing/Prob013_least_common_multiple`: the golden design
-compiles but **mismatches against an identical copy of itself** (389 of 399 samples). A design
-compared with itself should never mismatch, so the testbench or reference is not usable under
-Icarus 12 on macOS. `timing/Prob013`'s buggy design also fails to compile
-(`mcd_out is not a valid l-value`). All three were excluded.
+compiles but **mismatches against an identical copy of itself** (389 of 399 samples). The reference
+drives `lcm_out` to high-impedance (`'hz`) whenever its GCD register is 0, which is most of the
+run. The testbench's check, `ref === (ref ^ dut ^ ref)`, turns `z` into `x` through the XOR, and
+`z === x` is false, so even a perfect design fails. No candidate can pass these tasks.
+`timing/Prob013`'s buggy design also fails to compile (`mcd_out is not a valid l-value`).
+All three were excluded.
 
 **Final: 86 / 89 usable.** 
 
@@ -216,9 +223,11 @@ Icarus 12 on macOS. `timing/Prob013`'s buggy design also fails to compile
   | A | 3 | 5 | 3 | 1 |
   | B | 2 | 4 | 5 | 1 |
 
-- **Design-disjoint vs task-disjoint**: I noticed that some designs were reused across the different bug types. I considered a split that was both task and design disjoint, but then set B wouldn't have any relevant lessons based on design to reference from. The lessons would be too disjoint from set B to be useful. 
-- 
-- **Size:** 12 / 12 instead of 20 / 20 to leave time for the KB comparison and for reading
+- **Design-disjoint vs task-disjoint**: I noticed that some designs were reused across the different bug types. I considered a split that was both task and design disjoint, but then set B wouldn't have any relevant lessons based on design to reference from. The lessons would be too disjoint from set B to be useful. Keeping it task-disjoint means 3 of 12
+  B tasks share a design with A (`assignment/Prob012`, `timing/Prob012`, `timing/Prob002`), which
+  allows comparing seen vs unseen designs.
+  
+- **Size:** 12 / 12 to leave time for the KB comparison and for reading
   trajectories closely. 
 
 ### 6. Agent harness
@@ -240,86 +249,73 @@ Icarus 12 on macOS. `timing/Prob013`'s buggy design also fails to compile
 
 ## Baseline Analysis
 
-Codex (default settings, no KB) passed **17 / 24** tasks: **7 / 12 on A** and **10 / 12 on B**.
-All 24 trajectories passed the leak check. Total cost: 3.49M input tokens (mostly cached),
-82k output tokens, 17 minutes of agent time.
+Codex (default settings, no KB) passed **15 / 24** tasks: **7 / 12 on A** and **8 / 12 on B**.
+All 24 trajectories passed the leak check. Total cost: 3.41M input tokens (mostly cached),
+74k output tokens, 16 minutes of agent time.
 
-| | Passing runs (17) | Failing runs (7) |
+| | Passing runs (15) | Failing runs (9) |
 |---|---|---|
-| Median time | 31 s | 39 s |
-| Median input tokens | 125k | 170k |
-| Median shell commands | 5 | 6 |
-| Median lines changed in `TopModule.sv` | **2** | **16** |
+| Median time | 32 s | 41 s |
+| Median input tokens | 135k | 125k |
+| Median shell commands | 6 | 5 |
+| Median lines changed in `TopModule.sv` | **2** | **35** |
 
-By bug category: state machine 2/2, arithmetic 4/5, assignment 7/9, **timing 4/8**.
+By bug category: state machine 2/2, arithmetic 4/5, assignment 6/9, **timing 3/8**.
+
 
 ### Failure modes
 
-Reading all 7 failing trajectories against the true fix (`buggy.sv` vs the golden design):
+Comparing each failing fix with the true fix (`buggy.sv` vs the golden design):
 
-| Task | Set | True bug | What Codex did | Mode |
-|---|---|---|---|---|
-| assignment/Prob001 sequence detect | A | wrong constant (`0111_0011` → `0111_0001`) | fixed the constant **and** compared the post-shift window | over-repair |
-| assignment/Prob002 extraneous items | A | wrong constant (`001` → `011`) | fixed the constant **and** shifted both comparison windows | over-repair |
-| arithmetic/Prob002 extraneous items | A | reversed shift direction | fixed the shift **and** compared the post-shift window | over-repair |
-| timing/Prob010 8→16 width converter | A | first byte held in `always @(*)` instead of a register | correct diagnosis, then rewrote the module with an extra pipeline stage | over-repair |
-| timing/Prob027 settable counter | A | `number` in `always @(*)` instead of a register | made `number` clocked **and** changed `zero`'s timing | over-repair |
-| timing/Prob002 extraneous items | B | match half computed combinationally instead of registered | rewrote detection on the post-shift window | over-repair |
-| timing/Prob012 overlapping FSM | B | `flag` in `always @(*)` instead of a register | changed `<=` to `=` in next-state logic (a style issue), missed the real bug | mis-localization |
+| Task | Set | True bug | Lines changed | Mismatches | Mode |
+|---|---|---|---|---|---|
+| assignment/Prob001 sequence detect | A | wrong constant | 16 | 4 | over-repair |
+| assignment/Prob002 extraneous items | A | wrong constant | 37 | 16 | over-repair |
+| arithmetic/Prob002 extraneous items | A | reversed shift direction | 37 | 16 | over-repair |
+| timing/Prob010 8→16 width converter | A | first byte held in `always @(*)` instead of a register | 50 | 72 | over-repair |
+| timing/Prob027 settable counter | A | `number` in `always @(*)` instead of a register | 29 | 260 | over-repair |
+| timing/Prob002 extraneous items | B | match half computed combinationally instead of registered | 35 | 16 | over-repair |
+| timing/Prob016 odd clock divider | B | output block uses undeclared `clk`/`rst_n` | 49 | 430 | over-repair |
+| assignment/Prob007 data accumulation | B | counter wraps at 2 instead of 3 | 4 | 122 | over-repair |
+| timing/Prob003 non-overlapping detector | B | outputs registered instead of combinational | 29 | 1 | wrong fix |
 
-**1. The dominant failure is over-repair, not failure to find the bug.** In 6 of 7 failures
-Codex located the real root cause, usually fixing it correctly, then changed something
-else that was not broken. Failing fixes changed a median of 16 lines versus 2 for passing ones.
 
-**2. Self-verification does not catch it.** Codex writes and runs its own testbench in most
-runs, but that testbench encodes its own reading of the spec, so it confirms the wrong timing.
-On timing/Prob010 its summary reports the fix as verified; it fails with 72 mismatches.
+**1. The dominant failure is over-repair, not failure to find the bug.** In 8 of 9 failures Codex
+changed the faulty lines and also changed lines that weren't broken. On assignment/Prob007 it fixed
+the counter wrap correctly, then also changed how `ready_b` gates the first sample, a 4-line edit
+that caused 122 mismatches. Failing fixes changed a median of 35 lines vs 2 for passing ones.
 
-**3. Two recurring bug patterns.** "State held in `always @(*)` that should be clocked" is the
-true bug in timing/Prob010, timing/Prob027, timing/Prob002 and timing/Prob012, and Codex
-missed or over-repaired all four. The "extraneous items" sequence detector failed in all three
-of its variants (16 mismatches each), the same post-shift-window mistake every time.
+**2. Self-verification does not catch it.** All 9 failing runs simulated their fix with Icarus, and 8
+of 9 final summaries say the fix was verified or simulated. Codex's testbench encodes its own reading
+of the spec, so it confirms the wrong timing.
 
-### Implications for the KB
+### Run-to-run variance
 
-- **The repair discipline is the target.** A lesson like *"there is one injected bug; change only
-  the root cause and preserve every other signal's cycle timing"* directly addresses 6 of 7 failures.
-- **Learn from failures.** 5 of the 7 failures are in set A, so a KB built only from passing runs
-  would miss the main lesson. After grading an A task, the true fix is known (as in a real
-  post-mortem), so records can store what actually went wrong. Only set A's answers are used.
-  
-### Other observations
-
-- **Prompt framing matters.** With an early, vaguer prompt, Codex rewrote the whole Gray-code
-  counter; with the final RCA prompt it made the exact one-line fix in the smoke test. One run each,
-  so suggestive only.
+An earlier identical baseline run scored 17 / 24. Set A had the same 5 failures, but **4 of the 12
+set-B tasks changed outcome**: timing/Prob003, timing/Prob016 and assignment/Prob007 passed in
+run 1 and failed in run 2, and timing/Prob012 did the reverse. Differences of 2–3 tasks per set
+are within noise at this sample size.
 
 
 ## RCA Knowledge Base
 
 ### Design space
 
-The baseline showed that Codex usually *finds* the bug but over-repairs it (6 of 7 failures),
-and that both set-B failures share a design with a set-A task. I considered:
+In the first baseline run, Codex usually *found* the bug but over-repaired it (6 of 7 failures),
+and both set-B failures shared a design with a set-A task. The second run confirms the over-repair pattern. I considered:
 
 | Idea | Data structure | Interface | Targets |
 |---|---|---|---|
 | Lessons playbook | short list of general rules | always in the prompt | over-repair |
 | **Case library (chosen)** | one post-mortem record per past task | **top-k retrieved into the prompt (RAG, push)** | seen designs, specific bug patterns |
-| Bug-pattern checklist | taxonomy of bug types seen in A | in the prompt | recurring patterns (e.g. state in `always @(*)`) |
 | `AGENTS.md` | rules file | Codex's native instruction file (trajectories show it looks for one) | over-repair |
-| Search tool / MCP | same case records | agent calls `kb_search` when it wants (pull) | scale |
-| Diff guardrail | statistics of past fixes | check run after editing | self-verification blind spot |
-| Testbench artifacts | reusable testbench templates | files in the workspace | tokens / time |
 
-**Why a case library with push retrieval:** case records with a confirmed root cause and fix are
-how production RCA knowledge bases are usually built (post-mortems of resolved bugs). Pushing the
-top 3 cases into the prompt guarantees the agent sees them, so the experiment measures the
-*content* of the KB rather than whether the agent chooses to use a tool. Retrieving only the top 3
-keeps the prompt size bounded as the KB grows, and a bad record only affects tasks similar enough
-to retrieve it. A pull interface (CLI or MCP tool) over the same records is the production-style
-next step; I left it out because it changes two things at once (content and interface) and the
-agent might never call it.
+
+**Why a case library with push retrieval:** records with a confirmed root cause and fix are how
+production RCA knowledge bases are usually built (post-mortems of resolved bugs). Pushing the top 3
+into the prompt guarantees the agent sees them, so the experiment measures the KB's *content* rather
+than whether the agent chooses to use a tool, and top-k keeps the prompt size fixed as the KB grows.
+Embeddings find similar designs even when specs describe them in different words.
 
 ### What a record stores
 
@@ -336,9 +332,8 @@ After each set-A task is graded, `make_record` (`scripts/kb.py`) builds one case
 | `lesson` | one sentence, chosen by failure mode |
 | `embedding` | OpenAI embedding of `spec + buggy_code` |
 
-Records are written for **passing and failing** runs: 5 of the 7 baseline failures are in set A,
-so a KB built only from successes would miss the main lesson. Using the golden design for set-A
-tasks mirrors a real post-mortem, where the confirmed fix is known once the bug is resolved. No
+Records are written for **passing and failing** runs: 5 of the baseline failures (in both runs) are in set A,
+so a KB built only from successes would miss the main lesson. No
 set-B answers are ever used.
 
 ### Failure-mode classification
@@ -354,7 +349,7 @@ lines Codex removed gives:
 | `over_repair` | touched the faulty lines **and** other lines | "Also changed N lines the fix did not need; the edits are [*the exact lines*]. Those extra edits likely caused the mismatches. Change only the root cause." |
 | `wrong_fix` | touched only the faulty lines, still failed | "The change was incorrect. Compare with the confirmed fix." |
 
-On the 7 baseline failures this rule gives 6 `over_repair` and 1 `missed_root_cause`
+On the first baseline run's 7 failures this rule gives 6 `over_repair` and 1 `missed_root_cause`
 (`timing/Prob012`), matching a manual reading of every trajectory. A first version that compared
 total line counts (agent > 2× true fix) mislabeled 3 over-repairs as `wrong_fix`, because the
 reference's formatting inflates the true-fix line count.
@@ -406,162 +401,81 @@ The first A task sees an empty KB (same as the baseline), and each later A task 
 every earlier one. The run is resumable: finished tasks are skipped, and a finished A task that
 is missing from the KB is recorded on the next run.
 
-### Offline retrieval check
-
-Before any KB run, I embedded the 12 set-A *baseline* results and retrieved the top 3 for each
-set-B task (no Codex):
-
-```text
-arithmetic/Prob014_sequence_generator
-   0.868  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
-   0.855  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.854  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-arithmetic/Prob031_johnson_counter
-   0.858  timing/Prob027_settable_counter  (over_repair)
-   0.801  timing/Prob023_gray_code_counter  (passed)
-   0.798  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
-assignment/Prob012_state_machine_overlapping_sequence_detection
-   1.000  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
-   0.879  assignment/Prob004_continuous_input_sequence_detect2  (passed)
-   0.859  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-timing/Prob003_non-overlapping_sequence_detect
-   0.940  assignment/Prob004_continuous_input_sequence_detect2  (passed)
-   0.900  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.900  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-state_machine/Prob003_non-overlapping_sequence_detect
-   0.945  assignment/Prob004_continuous_input_sequence_detect2  (passed)
-   0.897  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.897  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-timing/Prob016_odd-number_division_with_a_duty_cycle_of_half
-   0.837  timing/Prob027_settable_counter  (over_repair)
-   0.820  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
-   0.812  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-timing/Prob002_extraneous_items_sequence_detect
-   0.997  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.997  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.902  assignment/Prob001_continuous_input_sequence_detect  (over_repair)
-timing/Prob026_simple_stopwatch
-   0.878  timing/Prob027_settable_counter  (over_repair)
-   0.820  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.820  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-assignment/Prob007_data_accumulation_output
-   0.892  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
-   0.815  arithmetic/Prob002_extraneous_items_sequence_detect  (over_repair)
-   0.814  assignment/Prob002_extraneous_items_sequence_detect  (over_repair)
-assignment/Prob024_multiplication_and_bitwise_operations
-   0.835  arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit  (passed)
-   0.795  timing/Prob027_settable_counter  (over_repair)
-   0.792  timing/Prob010_integer_multiple_data_bit_width_conversion_8to16  (over_repair)
-assignment/Prob031_johnson_counter
-   0.858  timing/Prob027_settable_counter  (over_repair)
-   0.801  timing/Prob023_gray_code_counter  (passed)
-   0.797  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
-timing/Prob012_state_machine_overlapping_sequence_detection
-   0.997  state_machine/Prob012_state_machine_overlapping_sequence_detection  (passed)
-   0.876  assignment/Prob004_continuous_input_sequence_detect2  (passed)
-   0.858  assignment/Prob002_extraneous_items_sequence_detect  (over_repair) 
-```
-
-- **Seen designs find their counterpart almost perfectly:** `timing/Prob002` → both A
-  extraneous-items cases (0.997), `timing/Prob012` and `assignment/Prob012` →
-  `state_machine/Prob012` (0.997 / 1.000). The spec is identical and the code differs only at the
-  injected bug.
-- **Unseen designs get sensible neighbors:** sequence detectors → sequence detectors, counters →
-  counters, data accumulation → the width converter, multiplication → the adder.
-- **Scores are compressed (≈0.79–1.0)** because every spec is "a clocked Verilog module that does X",
-  so there is no natural similarity threshold.
-- **Redundancy:** set A contains two variants of the same design (extraneous items), and they fill 2
-  of the 3 slots for 8 of the 12 B tasks. I kept plain top 3 for simplicity and because the two
-  cases carry different bugs (see What I'd Do Next).
-- **Failure cases appear almost everywhere:** half of the A records are over-repair failures, so
-  nearly every B task sees an over-repair lesson. This is a property of *this* set A; a set A
-  with fewer failures would surface that lesson less often.
 
 ## KB Results
 
-With the case library, Codex passed **15 / 24**: **8 / 12 on A** (baseline 7) and **7 / 12 on B**
-(baseline 10). All 24 trajectories passed the leak check.
+With the case library, Codex passed **15 / 24**: **8 / 12 on A** and **7 / 12 on B**, the same total
+as the baseline. All 24 trajectories passed the leak check.
 
 | | Baseline A | KB A | Baseline B | KB B |
 |---|---|---|---|---|
-| Passed | 7 / 12 | 8 / 12 | 10 / 12 | **7 / 12** |
-| Mean time | 39 s | 39 s | 45 s | 42 s |
-| Mean input tokens (cached) | 143k | 154k (142k) | 148k | 139k (128k) |
-| Mean output tokens | 3.2k | 3.2k | 3.6k | 3.3k |
-| Median lines changed | 10 | **5** | 4 | **8.5** |
+| Passed | 7 / 12 | 8 / 12 | 8 / 12 | 7 / 12 |
+| Mean time | 38 s | 39 s | 40 s | 42 s |
+| Mean input tokens | 137k | 154k | 147k | 139k |
+| Mean output tokens | 3.0k | 3.2k | 3.1k | 3.3k |
+| Median lines changed | 22.5 | **5** | 5 | 8.5 |
 
-Cost is essentially unchanged: the three retrieved cases add a few thousand prompt tokens, which
-are small next to the ~140k tokens Codex spends reading files and simulating, and mostly cached.
+### Task-level changes vs the baseline
 
-### Task-level changes
-
-| Task | Set | Baseline | KB | KB failure mode |
+| Task | Set | Baseline run 1 | Baseline run 2 | KB |
 |---|---|---|---|---|
-| timing/Prob010 width converter | A | 72 mismatches | **pass** | – |
-| timing/Prob003 non-overlapping detector | B | pass | 1 mismatch | `wrong_fix` |
-| timing/Prob016 odd clock divider | B | pass (7 lines) | 513 mismatches (23 lines) | `over_repair` |
-| assignment/Prob007 data accumulation | B | pass (2 lines) | 258 mismatches (39 lines) | `over_repair` |
-| timing/Prob002 extraneous items *(seen design)* | B | 16 mismatches | 16 mismatches | `over_repair` |
-| timing/Prob012 overlapping FSM *(seen design)* | B | 30 mismatches | 30 mismatches | `missed_root_cause` |
+| timing/Prob010 width converter | A | 72 | 72 | **pass** |
+| timing/Prob012 overlapping FSM *(seen design)* | B | 30 | pass | 30 |
+| timing/Prob003 non-overlapping detector | B | pass | 1 | 1 |
+| timing/Prob016 odd clock divider | B | pass | 430 | 513 |
+| assignment/Prob007 data accumulation | B | pass | 122 | 258 |
+| timing/Prob002 extraneous items *(seen design)* | B | 16 | 16 | 16 |
 
-Every other task kept its baseline outcome. Failure modes: baseline 6 `over_repair` / 1
-`missed_root_cause`; KB 6 `over_repair` / 2 `wrong_fix` / 1 `missed_root_cause`.
+(Numbers are mismatch counts.) Every other task passed or failed in all three runs.
 
-### What worked
+### What the comparison shows
 
-- **Set A got slightly better and edits got smaller.** One A task flipped to pass and none regressed,
-  and the median edit in A halved (10 → 5 lines). `assignment/Prob001` still failed, but with a 2-line
-  edit instead of 16: it no longer over-repaired, though the remaining change was still wrong.
-- **Retrieval itself worked.** Seen designs retrieved their set-A counterpart at 0.997–1.000 similarity,
-  and unseen designs got sensible neighbors (see [Offline retrieval check](#offline-retrieval-check)).
-- **No extra cost.** Time and tokens are within run-to-run noise of the baseline.
+- **No measurable effect on correctness.** The KB is +1 on A and −1 on B against the baseline, while
+  two identical baseline runs differed by 2 on B. The three B tasks that failed with the KB
+  (Prob003, Prob016, Prob007) also failed in baseline run 2, so they are tasks Codex is unreliable
+  on, not tasks the KB broke.
+- **Smaller edits on set A.** Median lines changed in A was 5 with the KB vs 10 and 22.5 in the two
+  baseline runs. This is the behavior the KB targeted (over-repair), and it is the most consistent
+  signal in the data. It didn't turn into more passes: assignment/Prob001 went from a 16-line to a
+  2-line edit and still failed.
+- **No improvement on seen designs.** Seen designs retrieved their set-A counterpart (similarity
+  0.997–1.000), but those cases carry a *different* injected bug, so they describe what was wrong
+  last time rather than now. timing/Prob002 failed identically in all three runs (see below).
+- **No extra cost.** Time and tokens are within run-to-run noise.
 
-### What failed
-
-- **Set B got worse (10 → 7), and every regression is on an *unseen* design.** Seen designs stayed at
-  1 / 3; unseen designs dropped from 9 / 9 to 6 / 9. The cases that were supposed to help most (same
-  design, different bug) changed nothing, and the cases that were only loosely related hurt.
-- **Two regressions are large over-repairs, the exact failure the KB was meant to prevent.**
-  Edits in B grew (median 4 → 8.5 lines). Both large regressions retrieved `timing/Prob010` from set A:
-  a **passing** case whose "verified" diagnosis describes rewriting the module into one synchronous
-  block (47 lines changed against an 11-line true fix). The KB labels it *verified* because the grader
-  passed it, but it is an over-repair that happened to be correct. A plausible reading is that showing
-  a successful rewrite as a worked example encouraged rewrites on loosely related designs
-  (`assignment/Prob007`: 2-line baseline fix → 39-line rewrite). This is a hypothesis from one run per
-  task, not a measured effect.
-- **The seen-design cases didn't transfer** because the set-A variants of those designs carry
-  *different* injected bugs. The KB told Codex what was wrong last time, which is not what is wrong now
-  (see `timing/Prob002` below), and `timing/Prob012` missed the root cause in both conditions.
-- **Some of the difference is variance.** `timing/Prob003` and `state_machine/Prob003` retrieved the
-  same three cases; one passed and one failed by a single mismatch (a combinational output lost its
-  `rst_n` gating). With one run per task, a ±2 swing on 12 tasks is within what repeated runs could show.
 
 ### How set A affects set B
 
-The KB is only as good as set A's mix of outcomes. Half of the A records are over-repair failures and
-one of the "successes" is itself an over-repair, so most B tasks received at least one case built
-around a large rewrite. The retrieved cases are also dominated by two variants of the same design
-(extraneous items), which fill 2 of 3 slots for 8 of 12 B tasks. A different set A (or a different
-order of A, since each A task only sees earlier ones) would give B different neighbors. In this split,
-set A was too small and too skewed for its cases to transfer.
+The KB is only as good as set A's mix of cases. Half of the A records are over-repair failures,
+two are variants of the same design (filling 2 of 3 retrieval slots for 8 of 12 B tasks), and one
+"success" is itself an over-repair. Each A task only sees earlier A tasks, so the order of A matters
+too. In this split, set A was too small and too skewed for its cases to transfer to new designs. 
+
+
+### Codex behavior
+
+I ran the baseline twice to check how consistent Codex is. With identical inputs, 4 of 12 set-B tasks
+changed outcome. In both runs Codex usually located the root cause but didn't consistently stop at it,
+and the tasks that flipped are ones where the spec leaves timing ambiguous. So a single run is a noisy
+measurement of an agent, and a KB's effect has to be measured over repeated runs.
 
 ### Conclusion
 
-A push-RAG case library, built from 12 post-mortems, did **not** improve Codex on a disjoint set
-(B 10 → 7, unchanged cost). It slightly helped the tasks it was built from (A 7 → 8, smaller edits),
-which suggests the records carry useful information but that **retrieved cases are not a reliable
-way to change *how* the agent repairs** (scope of edits, spec interpretation). Specific cases teach
-"what was wrong in that design", while the dominant failure is a general behavior. Two cautions on
-reading these numbers: one run per task, and set B's baseline results informed the KB's design (which
-information is shown), so B is not perfectly held out. A clean re-test would freeze the design and
-evaluate on a third set drawn from the 62 unused validated tasks, with several runs per task.
+A push-RAG case library built from 12 post-mortems **did not measurably change Codex's correctness**
+on a disjoint set, at no extra cost. It did shrink edits on the tasks it was built from. The
+retrieved cases seem to influence *how much* the agent edits more than *whether* it gets the fix
+right. The dominant remaining failure is the agent's interpretation of loosely specified timing,
+which its own testbench then confirms. The biggest lesson about method: with one run per task,
+run-to-run variance (4 of 12 B tasks flipped between identical baseline runs) is as large as any
+KB effect, so evaluating a KB needs several runs per task.
+
 
 ### The KB cannot override the agent's interpretation of the spec
 
 `timing/Prob002` (extraneous-items detector, a seen design) shows a limit of the KB:
 
-- **Without the KB (baseline)** Codex decided the detector should compare the *just-shifted* 9-bit
-  window and rewrote the detection logic around it (16 mismatches).
+- **Without the KB (baseline run 1)** Codex decided the detector should compare the *just-shifted* 9-bit
+  window and rewrote the detection logic around it (16 mismatches). Baseline run 2 failed with the same 16 mismatches.
 - **With the KB** it retrieved both set-A variants of the same design (similarity 0.997). Both were
   failures, and their lessons named the exact line `else if (a_tem[2:0] == 3'b110)` as an edit that
   was not needed. No unverified diagnosis was shown. Codex still rewrote the detector around the
@@ -570,12 +484,11 @@ evaluate on a third set drawn from the 62 unused validated tasks, with several r
   neither retrieved case, because the set-A variants of this design had different injected bugs.
 
 So this failure comes from how Codex *interprets* an ambiguous spec ("the output match is updated
-sequentially"), not from missing information. The baseline makes the same mistake without any KB,
+sequentially"), not from missing information. Both baseline runs fail the same way without any KB,
 and an explicit warning from a related post-mortem did not change it. A case library helps when the
 missing piece is knowledge, like a bug pattern or a confirmed fix; it helps much less when the agent
-is confident in a wrong reading of the spec. That connects to the baseline finding that every failure
-is a one-cycle timing disagreement caused by loosely specified latency (see
-[Baseline Analysis](#baseline-analysis)).
+is confident in a wrong reading of the spec. That connects to the baseline finding that Codex's own testbench confirms its reading of the spec
+(see [Baseline Analysis](#baseline-analysis)).
 
 ## Limitations & Known Issues
 
@@ -594,7 +507,7 @@ is a one-cycle timing disagreement caused by loosely specified latency (see
 
 ## What I'd Do Next
 
-- **Pull interface:** expose the same case store as a `kb_search` tool (CLI or MCP) and measure whether
+- **Build a pull interface:** expose the same case store as a `kb_search` tool (CLI or MCP) and measure whether
   and when the agent chooses to query it.
 - **Always-on lessons layer:** combine retrieved cases with a short set of general rules distilled from
   set A, so the over-repair lesson reaches tasks with no close match.
