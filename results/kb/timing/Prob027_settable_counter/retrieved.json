@@ -1,0 +1,17 @@
+[
+  {
+    "task": "timing/Prob023_gray_code_counter",
+    "score": 0.8213,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+    "score": 0.8061,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "assignment/Prob022_synchronous_FIFO",
+    "score": 0.7418,
+    "failure_mode": "passed"
+  }
+]

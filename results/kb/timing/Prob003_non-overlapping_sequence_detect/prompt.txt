@@ -1,0 +1,48 @@
+ You are a Verilog debugger. Your job is to analyze the provided Verilog code and perform a root cause analysis of any errors or issues present. 
+
+Files in this directory:
+- spec.txt: the intended behavior of the module `TopModule`
+- TopModule.sv: an implementation of TopModule that contains a bug
+
+Your task: find the root cause of the bug and fix TopModule.sv in place.
+- Keep the module name and port list unchanged, and keep any other modules in the file.
+- Icarus Verilog is installed (`iverilog -g2012`, `vvp`) if you want to write your own testbench and simulate.
+- Work only inside this directory.
+
+When you are done, end with a short summary in this format:
+SYMPTOM: what behavior was wrong
+ROOT CAUSE: the faulty line(s) and why they are wrong
+FIX: what you changed
+
+
+## Past debugging cases (from a knowledge base of previously debugged designs)
+These cases may or may not be relevant to this task. Use them as hints, not as answers.
+
+### Case 1: assignment/Prob004_continuous_input_sequence_detect2 (outcome: PASS)
+Agent's diagnosis (verified):
+- Fixed the state encoding bug in `TopModule.sv:16`.
+- Verified with a temporary `iverilog -g2012` simulation that `match` now asserts only after valid `0110`, instead of spuriously asserting after `01`.
+
+SYMPTOM: `match` went high too early and on the wrong patterns, because the FSM treated state `s2_d01` as if it were the full-match state  
+ROOT CAUSE: `TopModule.sv:16` defined `s4_d0110=4'd2`, which duplicates the encoding of `s2_d01=4'd2`; since the output logic checks `pstate==s4_d0110`, the alias caused false matches and broken state transitions  
+FIX: changed `s4_d0110` to a unique encoding, `4'd4`, in `TopModule.sv:16`
+
+Confirmed fix (diff of buggy -> correct):
+-          s4_d0110=4'd2;
++          s4_d0110=4'd4;
+
+Lesson: Fixed with a 2-line change that matched the reference behavior.
+
+### Case 2: arithmetic/Prob002_extraneous_items_sequence_detect (outcome: FAIL)
+Confirmed fix (diff of buggy -> correct):
+-				a_tem <= {a, a_tem[7:0]};
++				a_tem <= {a_tem[7:0],a};
+
+Lesson: Modified the faulty lines but also changed 2 lines the fix did not need; The edits are ["else if (a_tem[2:0] == 3'b110)", "else if (a_tem[8:6] == 3'b011)"]. It's likely that those extra edits caused the 16 mismatches. Change only the root cause.
+
+### Case 3: assignment/Prob002_extraneous_items_sequence_detect (outcome: FAIL)
+Confirmed fix (diff of buggy -> correct):
+-		else if (a_tem[8:6] == 3'b001)
++		else if (a_tem[8:6] == 3'b011)
+
+Lesson: Modified the faulty lines but also changed 1 lines the fix did not need; The edits are ["else if (a_tem[2:0] == 3'b110)"]. It's likely that those extra edits caused the 16 mismatches. Change only the root cause.

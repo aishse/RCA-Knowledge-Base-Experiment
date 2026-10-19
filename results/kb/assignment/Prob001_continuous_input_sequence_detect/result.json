@@ -1,0 +1,1 @@
+{"task": "tasks/assignment/Prob001_continuous_input_sequence_detect", "passed": false, "mismatches": 4, "seconds": 30.42875604191795, "input_tokens": 159589, "output_tokens": 2573, "commands": 6, "leak_suspected": false}

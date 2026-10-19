@@ -1,0 +1,91 @@
+ You are a Verilog debugger. Your job is to analyze the provided Verilog code and perform a root cause analysis of any errors or issues present. 
+
+Files in this directory:
+- spec.txt: the intended behavior of the module `TopModule`
+- TopModule.sv: an implementation of TopModule that contains a bug
+
+Your task: find the root cause of the bug and fix TopModule.sv in place.
+- Keep the module name and port list unchanged, and keep any other modules in the file.
+- Icarus Verilog is installed (`iverilog -g2012`, `vvp`) if you want to write your own testbench and simulate.
+- Work only inside this directory.
+
+When you are done, end with a short summary in this format:
+SYMPTOM: what behavior was wrong
+ROOT CAUSE: the faulty line(s) and why they are wrong
+FIX: what you changed
+
+
+## Past debugging cases (from a knowledge base of previously debugged designs)
+These cases may or may not be relevant to this task. Use them as hints, not as answers.
+
+### Case 1: assignment/Prob022_synchronous_FIFO (outcome: PASS)
+Agent's diagnosis (verified):
+- Fixed the FIFO pointer/control logic in `TopModule.sv:34` and `TopModule.sv:35`.
+- Verified with temporary `iverilog -g2012` simulations: fill/drain now returns to `rempty=1`, and simultaneous read+write while full keeps the FIFO full and preserves data flow.
+
+SYMPTOM: after reading all stored entries, the FIFO could stay non-empty/full incorrectly because the read pointer never wrapped its MSB; it also blocked a write when `winc` and `rinc` were both asserted while full  
+ROOT CAUSE: `TopModule.sv:35` originally compared `raddr[DP_WD-1:0] == DEPTH`, which is unreachable because the low bits reset at `DEPTH-1`, so the read pointer wrap bit never toggled; `TopModule.sv:34` also originally used `winc & (!wfull)`, which incorrectly suppressed a write during a simultaneous read on a full FIFO  
+FIX: changed the read-pointer wrap test to `DEPTH-1` in `TopModule.sv:35`, and changed write enable to `winc & ((!wfull) | renc)` in `TopModule.sv:34` so full-cycle read+write works correctly
+
+Confirmed fix (diff of buggy -> correct):
+-assign raddr_d_h = (raddr[DP_WD-1:0] == DEPTH) ? ~raddr[DP_WD] : raddr[DP_WD];
++assign raddr_d_h = (raddr[DP_WD-1:0] == DEPTH-1) ? ~raddr[DP_WD] : raddr[DP_WD];
+
+Lesson: Fixed with a 4-line change that matched the reference behavior. A smaller fix targeting only the root cause would also have worked.
+
+### Case 2: timing/Prob023_gray_code_counter (outcome: PASS)
+Agent's diagnosis (verified):
+- Updated `TopModule.sv:12`-`TopModule.sv:36` to compute binary from the **current** `gray_out`, increment it combinationally, convert back to Gray, and only load a new value every other clock using `step_en`.
+- Verified with `iverilog -g2012` plus a small temporary testbench; the counter now holds for one cycle, advances on the next, and preserves valid Gray transitions.
+
+SYMPTOM: the counter did not reliably produce the intended 4-bit Gray sequence every two clock cycles; the original logic could update from the wrong state and had race-prone sequential behavior.
+ROOT CAUSE: the original sequential blocks converted `gray_wire` back to binary instead of the current output state, split dependent state updates across two clocked blocks, and mixed blocking/nonblocking assignments in clocked logic; this made `bin_out`/`bin_add_wire` derive from inconsistent values and also omitted the required divide-by-2 pacing.
+FIX: rewrote `TopModule.sv` so `gray_out` is the state source, Gray→binary and binary+1→Gray happen combinationally in `TopModule.sv:12`, `TopModule.sv:19`, and `TopModule.sv:23`, and a new `step_en` flip-flop in `TopModule.sv:25` updates `gray_out` only every second clock wh
+
+Confirmed fix (diff of buggy -> correct):
++//Gray code to binary conversion
++//Binary increment
++//Binary to gray code conversion
+-always @(*) begin
+-	if (rst_n == 1'b0)
+-		gray_out = 4'b0;
+-	else
+-		gray_out = gray_wire;
++always @(posedge clk or negedge rst_n)begin
++   if(rst_n == 1'b0) begin
++      gray_out <= 4'b0;
++   end
++   else begin
++      gray_out <= gray_wire;
++   end
+
+Lesson: Fixed with a 50-line change that matched the reference behavior. A smaller fix targeting only the root cause would also have worked.
+
+### Case 3: timing/Prob010_integer_multiple_data_bit_width_conversion_8to16 (outcome: PASS)
+Agent's diagnosis (verified):
+**Fixed**
+- Reworked `TopModule.sv:13` into one synchronous block that stores the first byte, combines it with the second byte, and pulses `valid_out` for one cycle.
+- Verified with a temporary `iverilog -g2012` simulation: input pairs `12,34` and `ab,cd` now produce `16'h1234` and `16'habcd`.
+
+**Root Cause**
+- `TopModule.sv` originally updated `data_r` in a combinational block, with `data_r = valid_in ? data_in : data_r`; that infers latch-like behavior and overwrites the saved first byte with the second byte before packing.
+- Because `data_out <= flag && valid_in ? {data_r, data_in} : data_out;` used that corrupted `data_r`, the module emitted duplicated second bytes like `16'h3434` instead of `16'h1234`.
+
+SYMPTOM: the module output the second input byte twice (for example `16'h3434` instead of `16'h1234`) after two valid inputs  
+ROOT CAUSE: the combinational `data_r` block in the original `TopModule.sv` overwrote the stored first byte with the current `data_in`, so `{data_r, data_in}` used the second byte for both halves  
+FIX: replaced the buggy combinational storage with synchronous state in `TopModule.sv:13`, storing the first byte on the first valid cycle and assembling `{d
+
+Confirmed fix (diff of buggy -> correct):
+-    always @(*) begin
+-      if (~rst_n)
+-        data_r = 0;
+-      else
+-        data_r = valid_in ? data_in : data_r;
++    always@(posedge clk or negedge rst_n) begin
++        if(~rst_n)
++            data_r <= 0;
++        else
++            data_r <= valid_in? data_in: data_r;
+-
+
+Lesson: Fixed with a 47-line change that matched the reference behavior. A smaller fix targeting only the root cause would also have worked.

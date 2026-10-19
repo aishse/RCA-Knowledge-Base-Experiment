@@ -1,0 +1,17 @@
+[
+  {
+    "task": "state_machine/Prob012_state_machine_overlapping_sequence_detection",
+    "score": 1.0,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "assignment/Prob004_continuous_input_sequence_detect2",
+    "score": 0.8791,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "assignment/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8591,
+    "failure_mode": "over_repair"
+  }
+]

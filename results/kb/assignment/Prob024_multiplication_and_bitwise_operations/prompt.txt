@@ -1,0 +1,82 @@
+ You are a Verilog debugger. Your job is to analyze the provided Verilog code and perform a root cause analysis of any errors or issues present. 
+
+Files in this directory:
+- spec.txt: the intended behavior of the module `TopModule`
+- TopModule.sv: an implementation of TopModule that contains a bug
+
+Your task: find the root cause of the bug and fix TopModule.sv in place.
+- Keep the module name and port list unchanged, and keep any other modules in the file.
+- Icarus Verilog is installed (`iverilog -g2012`, `vvp`) if you want to write your own testbench and simulate.
+- Work only inside this directory.
+
+When you are done, end with a short summary in this format:
+SYMPTOM: what behavior was wrong
+ROOT CAUSE: the faulty line(s) and why they are wrong
+FIX: what you changed
+
+
+## Past debugging cases (from a knowledge base of previously debugged designs)
+These cases may or may not be relevant to this task. Use them as hints, not as answers.
+
+### Case 1: arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit (outcome: PASS)
+Agent's diagnosis (verified):
+Verified with an exhaustive `iverilog -g2012` simulation over all `16 x 16 x 2 = 512` input combinations; the fixed adder now matches `{CO, S} = A_in + B_in + C_1`.
+
+SYMPTOM: the adder produced wrong sums/carries because the generate term was computed incorrectly, so cases with bitwise carries failed  
+ROOT CAUSE: original `TopModule.sv:11` used `assign G = A_in ^ B_in;`, but `G_i` must be `A_i AND B_i`, not XOR; this broke every carry equation that depends on `G`. The code also did not follow the gate-level primitive requirement from `spec.txt`  
+FIX: replaced the buggy generate logic with bitwise `and` primitives and rewrote the adder in `TopModule.sv` using gate-level `xor`, `and`, `or`, and `buf` primitives while keeping the module name and ports unchanged
+
+Confirmed fix (diff of buggy -> correct):
+-    assign G=A_in^B_in;
++    assign G=A_in&B_in;
+
+Lesson: Fixed with a 40-line change that matched the reference behavior. A smaller fix targeting only the root cause would also have worked.
+
+### Case 2: timing/Prob027_settable_counter (outcome: FAIL)
+Confirmed fix (diff of buggy -> correct):
+-	always @(*) begin
+-    if (!rst_n)
+-      number = 1'b0;
+-    else
+-      number = num;
+-  end
++	always @(posedge clk or negedge rst_n)
++		if (!rst_n)
++			begin 
++				number <= 1'd0;
++			end
++		else 
++			begin
++				number <= num;
++			end			
+
+Lesson: Modified the faulty lines but also changed 10 lines the fix did not need; The edits are ['always @(posedge clk or negedge rst_n)', 'begin', "else if (num == 4'd0)", 'else if(set)', "num <= 4'b0;", "num <= num + 1'd1;", 'num <= set_num;', 'reg [3:0]num;', "zero <= 1'b0;", "zero <= 1'd0;"]. It's likely that those extra edits caused the 260 mismatches. Change only the root cause.
+
+### Case 3: timing/Prob010_integer_multiple_data_bit_width_conversion_8to16 (outcome: PASS)
+Agent's diagnosis (verified):
+**Fixed**
+- Reworked `TopModule.sv:13` into one synchronous block that stores the first byte, combines it with the second byte, and pulses `valid_out` for one cycle.
+- Verified with a temporary `iverilog -g2012` simulation: input pairs `12,34` and `ab,cd` now produce `16'h1234` and `16'habcd`.
+
+**Root Cause**
+- `TopModule.sv` originally updated `data_r` in a combinational block, with `data_r = valid_in ? data_in : data_r`; that infers latch-like behavior and overwrites the saved first byte with the second byte before packing.
+- Because `data_out <= flag && valid_in ? {data_r, data_in} : data_out;` used that corrupted `data_r`, the module emitted duplicated second bytes like `16'h3434` instead of `16'h1234`.
+
+SYMPTOM: the module output the second input byte twice (for example `16'h3434` instead of `16'h1234`) after two valid inputs  
+ROOT CAUSE: the combinational `data_r` block in the original `TopModule.sv` overwrote the stored first byte with the current `data_in`, so `{data_r, data_in}` used the second byte for both halves  
+FIX: replaced the buggy combinational storage with synchronous state in `TopModule.sv:13`, storing the first byte on the first valid cycle and assembling `{d
+
+Confirmed fix (diff of buggy -> correct):
+-    always @(*) begin
+-      if (~rst_n)
+-        data_r = 0;
+-      else
+-        data_r = valid_in ? data_in : data_r;
++    always@(posedge clk or negedge rst_n) begin
++        if(~rst_n)
++            data_r <= 0;
++        else
++            data_r <= valid_in? data_in: data_r;
+-
+
+Lesson: Fixed with a 47-line change that matched the reference behavior. A smaller fix targeting only the root cause would also have worked.

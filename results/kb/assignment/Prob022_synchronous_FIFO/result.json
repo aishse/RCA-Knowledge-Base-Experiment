@@ -1,0 +1,1 @@
+{"task": "tasks/assignment/Prob022_synchronous_FIFO", "passed": true, "mismatches": 0, "seconds": 52.92010954092257, "input_tokens": 198442, "output_tokens": 4630, "commands": 8, "leak_suspected": false}

@@ -1,0 +1,17 @@
+[
+  {
+    "task": "timing/Prob027_settable_counter",
+    "score": 0.8579,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "timing/Prob023_gray_code_counter",
+    "score": 0.8005,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "state_machine/Prob012_state_machine_overlapping_sequence_detection",
+    "score": 0.7973,
+    "failure_mode": "passed"
+  }
+]

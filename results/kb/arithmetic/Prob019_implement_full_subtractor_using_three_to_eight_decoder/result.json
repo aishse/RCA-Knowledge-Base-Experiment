@@ -1,0 +1,1 @@
+{"task": "tasks/arithmetic/Prob019_implement_full_subtractor_using_three_to_eight_decoder", "passed": true, "mismatches": 0, "seconds": 27.678635000018403, "input_tokens": 144306, "output_tokens": 1951, "commands": 6, "leak_suspected": false}

@@ -1,0 +1,17 @@
+[
+  {
+    "task": "assignment/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8995,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+    "score": 0.792,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "timing/Prob027_settable_counter",
+    "score": 0.7714,
+    "failure_mode": "over_repair"
+  }
+]

@@ -1,0 +1,1 @@
+{"task": "tasks/timing/Prob027_settable_counter", "passed": false, "mismatches": 260, "seconds": 31.46591500006616, "input_tokens": 127987, "output_tokens": 2371, "commands": 5, "leak_suspected": false}

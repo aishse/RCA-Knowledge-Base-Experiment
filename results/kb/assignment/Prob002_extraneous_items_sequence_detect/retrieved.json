@@ -1,0 +1,17 @@
+[
+  {
+    "task": "timing/Prob027_settable_counter",
+    "score": 0.8217,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+    "score": 0.8152,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "timing/Prob023_gray_code_counter",
+    "score": 0.7789,
+    "failure_mode": "passed"
+  }
+]

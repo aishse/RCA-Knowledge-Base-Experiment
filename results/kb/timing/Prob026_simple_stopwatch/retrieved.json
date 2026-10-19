@@ -1,0 +1,17 @@
+[
+  {
+    "task": "timing/Prob027_settable_counter",
+    "score": 0.8779,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "arithmetic/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8204,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "assignment/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8204,
+    "failure_mode": "over_repair"
+  }
+]

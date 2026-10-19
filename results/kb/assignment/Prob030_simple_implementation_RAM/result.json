@@ -1,0 +1,1 @@
+{"task": "tasks/assignment/Prob030_simple_implementation_RAM", "passed": true, "mismatches": 0, "seconds": 35.00995866605081, "input_tokens": 149218, "output_tokens": 2756, "commands": 6, "leak_suspected": false}

@@ -1,0 +1,1 @@
+{"task": "tasks/arithmetic/Prob011_4-bit_carry_look-ahead_adder_circuit", "passed": true, "mismatches": 0, "seconds": 36.38180600013584, "input_tokens": 110448, "output_tokens": 3391, "commands": 4, "leak_suspected": false}

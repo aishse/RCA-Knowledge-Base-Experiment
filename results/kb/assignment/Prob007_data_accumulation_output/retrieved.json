@@ -1,0 +1,17 @@
+[
+  {
+    "task": "timing/Prob010_integer_multiple_data_bit_width_conversion_8to16",
+    "score": 0.8924,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "arithmetic/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8148,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "assignment/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8143,
+    "failure_mode": "over_repair"
+  }
+]

@@ -20,3 +20,5 @@ a.out
 # scratch workspaces created during runs (trajectories are kept under results/)
 workspaces/
 ChipBench/
+.vscode/
+

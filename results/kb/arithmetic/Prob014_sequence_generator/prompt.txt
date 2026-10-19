@@ -1,0 +1,47 @@
+ You are a Verilog debugger. Your job is to analyze the provided Verilog code and perform a root cause analysis of any errors or issues present. 
+
+Files in this directory:
+- spec.txt: the intended behavior of the module `TopModule`
+- TopModule.sv: an implementation of TopModule that contains a bug
+
+Your task: find the root cause of the bug and fix TopModule.sv in place.
+- Keep the module name and port list unchanged, and keep any other modules in the file.
+- Icarus Verilog is installed (`iverilog -g2012`, `vvp`) if you want to write your own testbench and simulate.
+- Work only inside this directory.
+
+When you are done, end with a short summary in this format:
+SYMPTOM: what behavior was wrong
+ROOT CAUSE: the faulty line(s) and why they are wrong
+FIX: what you changed
+
+
+## Past debugging cases (from a knowledge base of previously debugged designs)
+These cases may or may not be relevant to this task. Use them as hints, not as answers.
+
+### Case 1: state_machine/Prob012_state_machine_overlapping_sequence_detection (outcome: PASS)
+Agent's diagnosis (verified):
+Fixed `TopModule.sv` and sanity-checked the FSM behavior with a temporary `iverilog -g2012` simulation.
+
+SYMPTOM: the detector missed valid overlapping occurrences of `1011`, such as streams where a partial match `101` is followed by `0` and should continue as the new prefix `10` (for example, `101011`).
+ROOT CAUSE: `TopModule.sv:26` had `S3 : nstate <= data ? S4 : S0;`, which incorrectly reset to `S0` after seeing `1010`. After `101` followed by `0`, the machine should retain the suffix `10`, so falling back to `S0` discarded a valid overlapping partial match.
+FIX: changed `TopModule.sv:26` to `S3 : nstate <= data ? S4 : S2;` so the FSM preserves the `10` prefix and correctly detects overlapping `1011` sequences.
+
+Confirmed fix (diff of buggy -> correct):
+-                S3     : nstate <= data? S4: S0;
++                S3     : nstate <= data? S4: S2;
+
+Lesson: Fixed with a 2-line change that matched the reference behavior.
+
+### Case 2: assignment/Prob002_extraneous_items_sequence_detect (outcome: FAIL)
+Confirmed fix (diff of buggy -> correct):
+-		else if (a_tem[8:6] == 3'b001)
++		else if (a_tem[8:6] == 3'b011)
+
+Lesson: Modified the faulty lines but also changed 1 lines the fix did not need; The edits are ["else if (a_tem[2:0] == 3'b110)"]. It's likely that those extra edits caused the 16 mismatches. Change only the root cause.
+
+### Case 3: arithmetic/Prob002_extraneous_items_sequence_detect (outcome: FAIL)
+Confirmed fix (diff of buggy -> correct):
+-				a_tem <= {a, a_tem[7:0]};
++				a_tem <= {a_tem[7:0],a};
+
+Lesson: Modified the faulty lines but also changed 2 lines the fix did not need; The edits are ["else if (a_tem[2:0] == 3'b110)", "else if (a_tem[8:6] == 3'b011)"]. It's likely that those extra edits caused the 16 mismatches. Change only the root cause.

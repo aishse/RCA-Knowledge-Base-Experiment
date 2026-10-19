@@ -1,0 +1,1 @@
+{"task": "tasks/assignment/Prob012_state_machine_overlapping_sequence_detection", "passed": true, "mismatches": 0, "seconds": 26.65569124999456, "input_tokens": 119527, "output_tokens": 1705, "commands": 5, "leak_suspected": false}

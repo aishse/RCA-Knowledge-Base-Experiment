@@ -1,0 +1,17 @@
+[
+  {
+    "task": "assignment/Prob004_continuous_input_sequence_detect2",
+    "score": 0.9451,
+    "failure_mode": "passed"
+  },
+  {
+    "task": "arithmetic/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8972,
+    "failure_mode": "over_repair"
+  },
+  {
+    "task": "assignment/Prob002_extraneous_items_sequence_detect",
+    "score": 0.8972,
+    "failure_mode": "over_repair"
+  }
+]
