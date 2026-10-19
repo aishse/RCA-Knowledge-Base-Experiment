@@ -1,0 +1,1 @@
+{"task": "tasks/timing/Prob023_gray_code_counter", "passed": true, "mismatches": 0, "seconds": 81.54209654196166, "input_tokens": 200862, "output_tokens": 6742, "commands": 8, "leak_suspected": false}

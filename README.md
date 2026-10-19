@@ -1,47 +1,167 @@
-# chipagents_takehome
+# RCA Knowledge Base for Hardware Debugging Agents
 
-## Rough notes (clean up when you write documentation): 
-### Which benchmark should we use?
-ChipBench debug (Recommended)
-### How many tasks? Each Codex run probably takes 1–3 minutes, and each task runs at least twice: once for the baseline and once with the KB.
-~40 tasks, A=20 / B=20 (Recommended)
-### What should Codex see in its workspace? (It never sees the correct RefModule.)
-Spec + buggy RTL + iverilog (Recommended)
+Does giving a debugging agent memory of past root-cause analyses (RCA) make it better,
+cheaper, or faster at fixing new hardware bugs? This repo runs Codex headless on Verilog
+debugging tasks from ChipBench, first with no memory (baseline) and then with an RCA
+knowledge base (KB) built on one set of tasks and evaluated, frozen, on a disjoint set.
 
-First thing-> Need to import the problemset
+> **Status:** baseline in progress. KB design, results and discussion are TODO.
 
-Codex can only see prompt, ref, and test
-per the docs: 
+## Overview
 
-   -  *_prompt.txt: prompt given to the LLM (natural language + code context) for generating or fixing Verilog.
-   -  *_ref.sv: reference Verilog implementation (bug‑free).
-   -  *_test.sv: testbench for automatic simulation and checking.
+The take-home asks how to store, organize and retrieve knowledge from previous RCA runs.
+I narrowed it to a small, controlled experiment:
 
-Choosing the zero shot problems, because the one-shot has waveforms next to the buggy output, which means the baseline will be able to solve
-everything without the need of a knowledge base, most likely. 
+- **Tasks:** ChipBench's zero-shot Verilog debugging set (89 tasks, 4 bug categories),
+  graded deterministically by simulating the agent's fix against the golden design.
+- **Agent:** Codex CLI in headless mode (`codex exec`) with default settings.
+- **Sets:** A = 12 tasks to build the KB, B = 12 disjoint tasks to evaluate it.
+- **Metrics:** correctness (pass/fail, mismatch count), tokens, wall-clock time, and
+  qualitative analysis of the trajectories.
 
-Need to ensure there is a proper split between set A and B of bug types
-How to ensure the correct module is extracted from the prompt: 
-- my assumption is that the very last code block provided is the buggy code. the rest is part of the prompt, and used by the llm to make their decisions on the next iteration of the code. 
+With 12 tasks per set the numbers are indicative, not statistically significant, so the
+report leans on qualitative comparison of trajectories alongside the metrics.
 
+## Results
 
-using icarus-verilog to compile and run --> llm reasoning can be prone to hallucinations and for a golden 
+TODO: baseline vs KB table (correctness, tokens, time) for set A and set B.
 
-## Vaildating the taskset 
+## Quickstart
 
-I created `validate.py` to check which of the test problems are usable with Icarus Verilog 12 (the version from the Dockerfile).
+### Requirements
 
-### Checks
+- macOS (tested) with Python 3.11. The scripts use only the standard library.
+- **Icarus Verilog 12**, the version ChipBench pins in its Dockerfile (see
+  [Simulator](#2-simulator-icarus-verilog-12) for why not 13). Build from source:
+
+  ```bash
+  brew install autoconf bison flex gperf
+  export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"   # macOS ships Bison 2.3; v12 needs 3.x
+  git clone -b v12-branch https://github.com/steveicarus/iverilog.git ~/iverilog-src
+  cd ~/iverilog-src && sh autoconf.sh && ./configure --prefix=$HOME/.local/iverilog12
+  # v12's driver/main.c is missing #include <mach-o/dyld.h> on macOS; add it under
+  # #ifdef __APPLE__ after #include <assert.h>, then:
+  make -j8 && make install
+  export PATH="$HOME/.local/iverilog12/bin:$PATH"
+  iverilog -V 2>&1 | head -1    # Icarus Verilog version 12
+  ```
+
+  Make sure no other `iverilog` (e.g. Homebrew's v13) comes first on your `PATH`.
+  Codex uses the same `iverilog` when it simulates.
+
+- **Codex CLI**, logged in with an API key:
+
+  ```bash
+  npm install -g @openai/codex
+  codex --version
+  printenv OPENAI_API_KEY | codex login --with-api-key
+  codex login status
+  ```
+
+### Running
+
+Run every script from the repo root.
+
+```bash
+# 1. Get the benchmark (pinned commit)
+git clone https://github.com/zhongkaiyu/ChipBench.git 
+
+# 2. Import the 89 zero-shot debugging tasks into tasks/
+python3 scripts/import_problems.py "ChipBench/Verilog Debugging"
+
+# 3. Check every task is gradeable -> validation_results.json
+python3 scripts/validate.py
+
+# 4. Seeded A/B split -> split.json
+python3 scripts/split.py
+
+# 5. Baseline (no KB) on A and B -> results/baseline/
+caffeinate -i python3 scripts/run_experiment.py --mode baseline
+```
+
+`tasks/`, `validation_results.json` and `split.json` are committed, so steps 1–4 are
+only needed to reproduce them. `run_experiment.py` skips tasks that already have a
+`result.json`, so an interrupted run can be resumed.
+
+## How It Works
+
+```
+ChipBench prompt.txt ──import──► tasks/<category>/<problem>/
+                                   spec.txt    buggy.sv      (agent sees these)
+                                   ref.sv      test.sv       (hidden, grading only)
+                                        │
+                     validate.py ───────┤  golden passes? buggy fails?
+                     split.py ──────────┤  seeded, task-disjoint A / B
+                                        ▼
+run_experiment.py ── for each task ──► run_codex.py
+    1. fresh temp workspace outside the repo: spec.txt + TopModule.sv (= buggy.sv)
+    2. codex exec --json --sandbox workspace-write --skip-git-repo-check <prompt>
+    3. grader.py: simulate Codex's TopModule.sv against RefModule in Icarus
+    4. save trajectory, final RTL, prompt, tokens, time, grade -> result.json
+```
+
+### Project Structure
+
+```
+.
+├── scripts/
+│   ├── import_problems.py   # ChipBench prompt -> spec.txt + buggy.sv (+ ref/test)
+│   ├── grader.py            # compile + simulate candidate vs golden, count mismatches
+│   ├── validate.py          # golden-passes / buggy-fails check for every task
+│   ├── split.py             # seeded A/B split
+│   ├── run_codex.py         # run Codex on one task in an isolated workspace
+│   └── run_experiment.py    # run a whole condition over A and B
+├── tasks/<category>/<problem>/   # spec.txt, buggy.sv, ref.sv, test.sv
+├── results/<condition>/<category>/<problem>/
+│   ├── trajectory.jsonl     # full Codex event stream (--json)
+│   ├── stderr.log
+│   ├── prompt.txt           # exact prompt used
+│   ├── TopModule.sv         # Codex's final RTL
+│   └── result.json          # pass/fail, mismatches, seconds, tokens, commands, leak flag
+├── validation_results.json
+├── split.json
+└── README.md
+```
+
+## Design Decisions
+
+### 1. Benchmark: ChipBench zero-shot debugging
+
+- **ChipBench over HWE-Bench.** HWE-Bench tasks are real repo bugs (OpenTitan, Ibex,
+  CVA6, …) but need per-task Docker images and Verilator builds, and the paper reports
+  millions of tokens per task. That is too heavy to run several conditions in a day.
+  ChipBench tasks are small, self-contained, and graded in about a second.
+- **Zero-shot over one-shot.** The one-shot prompts are the same bugs with a VCD waveform
+  appended, and the waveform includes the *golden* outputs (e.g. `gray_out_ref`) next to the
+  buggy ones. The baseline could read the answer off the waveform, leaving little room for
+  a KB to help. Codex can also simulate on its own, which is closer to real RCA.
+
+### 2. Simulator: Icarus Verilog 12
+
+ChipBench's Dockerfile builds Icarus from `v12-branch`. Homebrew installs v13, which
+rejects a forward reference in every ChipBench testbench (`$dumpvars(..., tb_mismatch, ...)`
+appears before `tb_mismatch` is declared). I built v12 from source to match the benchmark
+exactly instead of modifying the testbenches.
+
+### 3. Extracting the buggy code
+
+Each ChipBench `*_prompt.txt` is a spec followed by fenced code. The **last** code block is
+always the buggy `TopModule`. Seven prompts (FIFOs, full subtractor) contain an extra block
+before it with a provided helper module, so "first block" would be wrong. The marker sentence
+("Based on the problem description above…") has two wordings across the 89 prompts, so the
+import splits on the last fence (`rsplit("```", 2)`) rather than on that sentence.
+
+### 4. Validating the task set
+
+`validate.py` checks every task is gradeable with Icarus 12:
 
 - **Golden check:** the reference design, used as the candidate, must pass its own testbench (0 mismatches).
 - **Buggy check:** the original buggy design must fail (otherwise the bug is invisible to the grader
   and an agent could "solve" it by changing nothing).
 
-### First pass: 78 / 89 usable
+**First pass: 78 / 89 usable.** The 11 failures fell into two groups.
 
-The 11 failures fell into two groups.
-
-**1. Validation artifact: helper modules (8 tasks)**
+**a) Validation artifact: helper modules (8 tasks, fixed)**
 
 | Task | Helper module | Error |
 |---|---|---|
@@ -54,135 +174,106 @@ The 11 failures fell into two groups.
 | timing/Prob021_asynchronous_FIFO | `dual_port_RAM` | Module declared twice |
 | timing/Prob022_synchronous_FIFO | `dual_port_RAM` | Module declared twice |
 
-These designs had a helper module that lives in the *candidate's* file
-(`buggy.sv`), not inside `RefModule`. The first golden check used `ref.sv` with
-`RefModule` renamed to `TopModule`, which either left the helper undefined or, where
-`ref.sv` also defines the helper, defined it twice.
+These designs have a helper module that lives in the *candidate's* file (`buggy.sv`), not
+inside `RefModule`. The first golden check used `ref.sv` with `RefModule` renamed to
+`TopModule`, which either left the helper undefined or, where `ref.sv` also defines the
+helper, defined it twice.
 
-*Fix*: The golden candidate is now built from buggy.sv with only the buggy TopModule swapped for the correct one, so it matches what a perfect fix would look like. This resolved all 8 failures.
+*Fix:* the golden candidate is now built from `buggy.sv` with only the buggy `TopModule`
+swapped for the correct one, so it matches what a perfect fix would look like. This resolved
+all 8 failures. The issue was confined to `validate.py`: real candidates are edited copies of
+`buggy.sv`, so they always include the helper modules.
 
-**2. Benchmark issue: least common multiple (3 tasks, excluded)**
+**b) Benchmark issue: least common multiple (3 tasks, excluded)**
 
-`arithmetic/`, `assignment/` and `timing/Prob013_least_common_multiple`: the golden
-design compiles but **mismatches against an identical copy of itself** (389 of 399
-samples). A design compared with itself should never mismatch, so the testbench or
-reference was not usable under Icarus 12 on MacOS. `timing/Prob013`'s buggy design also fails to
-compile (`mcd_out is not a valid l-value`). All three were excluded.
+`arithmetic/`, `assignment/` and `timing/Prob013_least_common_multiple`: the golden design
+compiles but **mismatches against an identical copy of itself** (389 of 399 samples). A design
+compared with itself should never mismatch, so the testbench or reference is not usable under
+Icarus 12 on macOS. `timing/Prob013`'s buggy design also fails to compile
+(`mcd_out is not a valid l-value`). All three were excluded.
 
-### Final: 86 / 89 usable 
+**Final: 86 / 89 usable.** One buggy design (`timing/Prob022_synchronous_FIFO`) hangs the
+simulator in a zero-delay loop. It still counts as "buggy fails" via the grader's timeout, so
+the task is usable, but it's a reminder that grading needs a timeout.
 
-One buggy design (`timing/Prob022_synchronous_FIFO`) hangs the simulator in a
-zero-delay loop. It still counts as "buggy fails" via the grader's timeout, so the
-task is usable, but it's a reminder that grading needs a timeout.
+### 5. Task split
 
+- **Task-disjoint:** no task appears in both A and B. ChipBench reuses 33 designs across its
+  tasks with different injected bugs, so a design can appear in both sets with *different*
+  bugs. I kept this deliberately: it allows comparing B tasks whose design was seen in A
+  against B tasks whose design was not (3 of 12 B tasks share a design with A:
+  `assignment/Prob012`, `timing/Prob012`, `timing/Prob002`).
+- **Method:** shuffle all 86 usable tasks with a fixed seed (`SEED = 0`), take the first 12 as
+  A and the next 12 as B. The category mix was checked rather than forced:
 
-## Task Splitting
-Since A and B are **disjoint**, the straightforward method for splitting is to save all usable problems into a list, shuffle them randomly, and split the top $2n$ sets
-into sets of n each. I also added a summary output that shows the split across all categories.
+  | Set | arithmetic | assignment | timing | state machine |
+  |---|---|---|---|---|
+  | A | 3 | 5 | 3 | 1 |
+  | B | 2 | 4 | 5 | 1 |
 
+- **Size:** 12 / 12 instead of 20 / 20 to leave time for the KB comparison and for reading
+  trajectories closely (quality over quantity).
 
+### 6. Agent harness
 
-### Installation guide: 
-```bash
-brew install icarus-verilog
-iverilog -V | head -1
+- **Isolation:** each run gets a fresh temp directory outside the repo containing only
+  `spec.txt` and `TopModule.sv`, so `ref.sv` and `test.sv` are never next to the agent.
+- **Default settings:** `codex exec --json --sandbox workspace-write --skip-git-repo-check`.
+  `workspace-write` is the minimum needed to edit the file (the default is read-only).
+  TODO: Codex version and model (trajectories report `gpt-5.4`).
+- **Prompt:** the same base prompt in every condition (`build_prompt()` only *appends* KB
+  context), so the KB is the only difference between conditions. It names the two files,
+  says Icarus is available, asks for an in-place fix that keeps the module interface, and
+  asks for a closing `SYMPTOM / ROOT CAUSE / FIX` summary (raw material for KB records).
+  The exact prompt is saved with every run.
+- **Leak check:** Codex's sandbox restricts writes but not reads, so it could in principle
+  read the golden files elsewhere on disk. Every command in every trajectory is scanned for
+  `RefModule`, `ref.sv`, `chipagents_takehome` and `ChipBench`, and flagged in `result.json`.
+  (Agents do wander: in the smoke test Codex ran `find .. -name AGENTS.md` on its parent directory.)
 
-# 2. Codex CLI
-npm install -g @openai/codex
-codex --version
+## Early Observations
 
-export OPENAI_API_KEY=sk-...
-printenv OPENAI_API_KEY | codex login --with-api-key
-codex login status
-```
+- **Correct root cause, wrong repair.** On `timing/Prob010` (8→16-bit width converter) Codex
+  correctly identified the bug (`data_r` stored in a combinational block, so the first byte was
+  overwritten) but then rewrote the module and added an extra pipeline stage, delaying the output
+  one cycle (72 mismatches). Its own testbench agreed with its fix, because it encoded Codex's
+  own reading of the spec: self-verification confirmed the interpretation, not the real behavior.
+- **Prompt framing matters.** With an early, vaguer prompt Codex rewrote the whole Gray-code
+  counter. With the final RCA-focused prompt it made the exact one-line fix
+  (`bin_out[0] = gray_wire[0]^bin_out[1]`). One run each, so suggestive only.
+- **Run-to-run variance.** The same Gray-code task took 47 s / 149k input tokens in the smoke
+  test and 81 s / 201k in the baseline. Small baseline-vs-KB differences may be noise.
 
-<!-- One sentence: what it does and who/what it's for. -->
-A short description of what this project does.
+## RCA Knowledge Base
 
-## Overview
-
-<!-- 3–5 sentences. What problem did you pick, and how did you interpret
-the open-ended prompt? Say plainly that you narrowed the scope and why. -->
-
-## Demo
-
-<!-- Show it working: example input/output, a short terminal transcript,
-or a screenshot/GIF. Reviewers often look here first. -->
-
-```
-$ python main.py --example
-...
-```
-
-## Quickstart
-
-```bash
-git clone <repo-url>
-cd chipagents_takehome
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-# any env vars, e.g.:
-export OPENAI_API_KEY=...   # or whichever provider you use
-python main.py
-```
-
-<!-- Test these steps from a fresh clone before submitting. -->
-
-## How It Works
-
-<!-- The architecture in plain words. A small diagram or a numbered
-flow helps a lot, e.g.:
-1. Input is parsed into ...
-2. The agent decides ... using tools X and Y
-3. Results are checked by ...
-Keep it high-level and point to the relevant files. -->
-
-### Project Structure
-
-```
-.
-├── src/
-│   ├── ...
-├── tests/
-├── NOTES.md
-└── README.md
-```
-
-## Design Decisions
-
-<!-- The most important section for your interview. 3–6 decisions, each
-with what you chose, what you considered instead, and why. -->
-
-- **Decision 1:** Chose X over Y because ...
-- **Decision 2:** ...
-- **Decision 3:** ...
-
-## Testing & Evaluation
-
-<!-- How do you know it works? Unit tests, example cases, a small eval
-set, manual checks. Be honest about coverage. -->
-
-```bash
-pytest
-```
+TODO: what is stored, how it is organized, how the agent retrieves it, how it is updated on A
+and frozen for B.
 
 ## Limitations & Known Issues
 
-<!-- What doesn't work, edge cases you know about, shortcuts you took on
-purpose. Naming these yourself reads as good judgment. -->
-
-- ...
+- 12 tasks per set and one run per task: results are indicative, not statistically significant.
+- ChipBench bugs are small, single-module, hand-injected bugs, far simpler than real RTL RCA.
+- The leak check only inspects shell commands Codex runs.
+- TODO
 
 ## What I'd Do Next
 
-<!-- Your safety valve. Anything you scoped out goes here, ideally with
-a sentence on how you'd approach it. -->
+TODO
 
-- ...
+## AI Usage
+
+AI tools were allowed. TODO: one or two lines on how you used them.
+
+## Sources
+
+- ChipBench: Z. Yu, C. Zhou et al., *ChipBench: A Next-Step Benchmark for Evaluating LLM Performance
+  in AI-Aided Chip Design*, [arXiv:2601.21448](https://arxiv.org/abs/2601.21448);
+  code [github.com/zhongkaiyu/ChipBench](https://github.com/zhongkaiyu/ChipBench) (MIT), commit `b4ba3a0`.
+- HWE-Bench: *HWE-Bench: Benchmarking LLM Agents on Real-World Hardware Bug Repair Tasks*,
+  [arXiv:2604.14709](https://arxiv.org/pdf/2604.14709).
+- Icarus Verilog: [github.com/steveicarus/iverilog](https://github.com/steveicarus/iverilog), `v12-branch`.
+- Codex CLI: [OpenAI Codex non-interactive mode docs](https://learn.chatgpt.com/docs/non-interactive-mode).
 
 ## Time Spent
 
-<!-- Optional, but it helps reviewers calibrate. Roughly how long, and
-where it went. -->
-
-~X hours: Y on core implementation, Z on testing, W on write-up.
+TODO

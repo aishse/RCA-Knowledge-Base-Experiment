@@ -1,0 +1,15 @@
+ You are a Verilog debugger. Your job is to analyze the provided Verilog code and perform a root cause analysis of any errors or issues present. 
+
+Files in this directory:
+- spec.txt: the intended behavior of the module `TopModule`
+- TopModule.sv: an implementation of TopModule that contains a bug
+
+Your task: find the root cause of the bug and fix TopModule.sv in place.
+- Keep the module name and port list unchanged, and keep any other modules in the file.
+- Icarus Verilog is installed (`iverilog -g2012`, `vvp`) if you want to write your own testbench and simulate.
+- Work only inside this directory.
+
+When you are done, end with a short summary in this format:
+SYMPTOM: what behavior was wrong
+ROOT CAUSE: the faulty line(s) and why they are wrong
+FIX: what you changed

@@ -49,6 +49,10 @@ def run_task(task_dir, out_dir, timeout=900):
 
         try:
             # run Codex with the prompt and the buggy TopModule.sv in a temporary directory
+            print(
+                f"  ▶ Codex starting on {task_dir.parent.name}/{task_dir.name}...",
+                flush=True,
+            )
 
             time_start = time.monotonic()
             result = subprocess.run(
@@ -62,6 +66,7 @@ def run_task(task_dir, out_dir, timeout=900):
             )
             time_end = time.monotonic()
             time_taken = time_end - time_start
+            print(f"  ■ Codex finished in {time_taken:.0f}s, grading...", flush=True)
 
         except subprocess.TimeoutExpired:
             raise Exception("Timeout occurred while running Codex")
@@ -81,6 +86,10 @@ def run_task(task_dir, out_dir, timeout=900):
 
             # grade the modified TopModule.sv
             passed, info = grade(task_dir, modified_file.read_text(), timeout=20)
+            print(
+                f"  {'✅ PASS' if passed else '❌ FAIL'} ({info.get('mismatches')} mismatches)",
+                flush=True,
+            )
         else:
             raise Exception("Modified TopModule.sv not found in the temporary directory.")
 
@@ -130,6 +139,7 @@ def run_task(task_dir, out_dir, timeout=900):
             )
     finally: 
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
 
 def build_prompt(kb_context=""):
     """

@@ -1,0 +1,1 @@
+{"task": "tasks/timing/Prob012_state_machine_overlapping_sequence_detection", "passed": false, "mismatches": 30, "seconds": 112.79838070902042, "input_tokens": 247444, "output_tokens": 8611, "commands": 9, "leak_suspected": false}

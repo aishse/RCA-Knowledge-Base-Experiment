@@ -1,0 +1,1 @@
+{"task": "tasks/timing/Prob003_non-overlapping_sequence_detect", "passed": true, "mismatches": 0, "seconds": 39.31939766602591, "input_tokens": 124559, "output_tokens": 2967, "commands": 5, "leak_suspected": false}
