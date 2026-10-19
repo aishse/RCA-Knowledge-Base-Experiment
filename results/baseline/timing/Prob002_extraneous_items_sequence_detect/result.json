@@ -1,1 +1,1 @@
-{"task": "tasks/timing/Prob002_extraneous_items_sequence_detect", "passed": false, "mismatches": 16, "seconds": 38.864163832971826, "input_tokens": 173256, "output_tokens": 3101, "commands": 6, "leak_suspected": false}
+{"task": "tasks/timing/Prob002_extraneous_items_sequence_detect", "passed": false, "mismatches": 16, "seconds": 31.288137124851346, "input_tokens": 118018, "output_tokens": 2483, "commands": 4, "leak_suspected": false}

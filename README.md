@@ -1,12 +1,7 @@
 # RCA Knowledge Base for Hardware Debugging Agents
 
-Does giving a debugging agent memory of past root-cause analyses (RCA) make it better,
-cheaper, or faster at fixing new hardware bugs? This repo runs Codex headless on Verilog
-debugging tasks from ChipBench, first with no memory (baseline) and then with an RCA
-knowledge base (KB) built on one set of tasks and evaluated, frozen, on a disjoint set.
-
 > **Status:** complete. Baseline 17 / 24, case-library KB 15 / 24 (A 7 → 8, B 10 → 7).
-> **The KB did not help on the held-out set.** See [KB Results](#kb-results).
+> **In this experiment, the KB did not help on the held-out set.** See [KB Results](#kb-results).
 
 ## Overview
 
@@ -29,10 +24,11 @@ report leans on qualitative comparison of trajectories alongside the metrics.
 |---|---|---|---|---|---|
 | Baseline (no KB) | A | 7 / 12 | 39 s | 143k | 3.2k |
 | Baseline (no KB) | B | 10 / 12 | 45 s | 148k | 3.6k |
-| KB (case library) | A (mutable) | 8 / 12 | 39 s | 154k | 3.2k |
-| KB (case library) | B (frozen) | **7 / 12** | 42 s | 139k | 3.3k |
+| KB (mutable) | A | 8 / 12 | 39 s | 154k | 3.2k |
+| KB (frozen) | B | **7 / 12** | 42 s | 139k | 3.3k |
 
-One run per task. Input tokens include cached tokens (most of them).
+One run per task. Input tokens include cached tokens (most of them). An earlier baseline run also
+showed set A passing 7/12 cases and set B passing 10/12 cases. 
 
 ## Quickstart
 
@@ -46,12 +42,17 @@ One run per task. Input tokens include cached tokens (most of them).
 
   ```bash
   brew install autoconf bison flex gperf
-  export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"   # macOS ships Bison 2.3; v12 needs 3.x
+
+  export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH" 
+
   git clone -b v12-branch https://github.com/steveicarus/iverilog.git ~/iverilog-src
+
   cd ~/iverilog-src && sh autoconf.sh && ./configure --prefix=$HOME/.local/iverilog12
+
   # v12's driver/main.c is missing #include <mach-o/dyld.h> on macOS; add it under
   # #ifdef __APPLE__ after #include <assert.h>, then:
   make -j8 && make install
+
   export PATH="$HOME/.local/iverilog12/bin:$PATH"
   iverilog -V 2>&1 | head -1    # Icarus Verilog version 12
   ```
@@ -100,12 +101,14 @@ only needed to reproduce them. `run_experiment.py` skips tasks that already have
 
 ```
 ChipBench prompt.txt ──import──► tasks/<category>/<problem>/
-                                   spec.txt    buggy.sv      (agent sees these)
-                                   ref.sv      test.sv       (hidden, grading only)
-                                        │
-                     validate.py ───────┤  golden passes? buggy fails?
-                     split.py ──────────┤  seeded, task-disjoint A / B
-                                        ▼
+                                   
+        spec.txt    buggy.sv      (agent sees these)
+        ref.sv      test.sv       (hidden, grading only)
+                │
+validate.py ───────┤  golden passes? buggy fails?
+split.py ──────────┤  seeded, task-disjoint A / B
+                ▼
+
 run_experiment.py ── for each task ──► run_codex.py
     1. fresh temp workspace outside the repo: spec.txt + TopModule.sv (= buggy.sv)
     2. codex exec --json --sandbox workspace-write --skip-git-repo-check <prompt>
@@ -144,28 +147,21 @@ run_experiment.py ── for each task ──► run_codex.py
 
 ### 1. Benchmark: ChipBench zero-shot debugging
 
-- **ChipBench over HWE-Bench.** HWE-Bench tasks are real repo bugs (OpenTitan, Ibex,
-  CVA6, …) but need per-task Docker images and Verilator builds, and the paper reports
-  millions of tokens per task. That is too heavy to run several conditions in a day.
-  ChipBench tasks are small, self-contained, and graded in about a second.
+- **ChipBench over HWE-Bench.** The HWE-Bench tasks xneed per-task Docker images and Verilator builds, which is too heavy. ChipBench tasks are small, self-contained, and graded in about a second.
 - **Zero-shot over one-shot.** The one-shot prompts are the same bugs with a VCD waveform
   appended, and the waveform includes the *golden* outputs (e.g. `gray_out_ref`) next to the
-  buggy ones. The baseline could read the answer off the waveform, leaving little room for
-  a KB to help. Codex can also simulate on its own, which is closer to real RCA.
+  buggy ones. The baseline could read the answer off the waveform, making a KB less useful for Codex. Codex is also able to simulate on it's own using Icarus.  
 
 ### 2. Simulator: Icarus Verilog 12
 
-ChipBench's Dockerfile builds Icarus from `v12-branch`. Homebrew installs v13, which
-rejects a forward reference in every ChipBench testbench (`$dumpvars(..., tb_mismatch, ...)`
-appears before `tb_mismatch` is declared). I built v12 from source to match the benchmark
-exactly instead of modifying the testbenches.
+ChipBench's Dockerfile builds Icarus from `v12-branch`. Homebrew installs ``v13``, so I had to build from a repository in order to ensure the grader could work on my computer. 
 
 ### 3. Extracting the buggy code
 
-Each ChipBench `*_prompt.txt` is a spec followed by fenced code. The **last** code block is
+Each ChipBench `*_prompt.txt` is a spec followed by fenced code. The **last** code block in spec is
 always the buggy `TopModule`. Seven prompts (FIFOs, full subtractor) contain an extra block
-before it with a provided helper module, so "first block" would be wrong. The marker sentence
-("Based on the problem description above…") has two wordings across the 89 prompts, so the
+before it with a provided helper module, so "first block" would be wrong. Initially, using the marker sentence
+("Based on the problem description above…") made sense as the split point. However, it has different wordings across the 89 prompts, so the
 import splits on the last fence (`rsplit("```", 2)`) rather than on that sentence.
 
 ### 4. Validating the task set
@@ -197,9 +193,8 @@ inside `RefModule`. The first golden check used `ref.sv` with `RefModule` rename
 helper, defined it twice.
 
 *Fix:* the golden candidate is now built from `buggy.sv` with only the buggy `TopModule`
-swapped for the correct one, so it matches what a perfect fix would look like. This resolved
-all 8 failures. The issue was confined to `validate.py`: real candidates are edited copies of
-`buggy.sv`, so they always include the helper modules.
+swapped for the correct one from `ref.sv`, so it matches what a perfect fix would look like. This resolved
+all 8 failures.
 
 **b) Benchmark issue: least common multiple (3 tasks, excluded)**
 
@@ -209,17 +204,10 @@ compared with itself should never mismatch, so the testbench or reference is not
 Icarus 12 on macOS. `timing/Prob013`'s buggy design also fails to compile
 (`mcd_out is not a valid l-value`). All three were excluded.
 
-**Final: 86 / 89 usable.** One buggy design (`timing/Prob022_synchronous_FIFO`) hangs the
-simulator in a zero-delay loop. It still counts as "buggy fails" via the grader's timeout, so
-the task is usable, but it's a reminder that grading needs a timeout.
+**Final: 86 / 89 usable.** 
 
 ### 5. Task split
 
-- **Task-disjoint:** no task appears in both A and B. ChipBench reuses 33 designs across its
-  tasks with different injected bugs, so a design can appear in both sets with *different*
-  bugs. I kept this deliberately: it allows comparing B tasks whose design was seen in A
-  against B tasks whose design was not (3 of 12 B tasks share a design with A:
-  `assignment/Prob012`, `timing/Prob012`, `timing/Prob002`).
 - **Method:** shuffle all 86 usable tasks with a fixed seed (`SEED = 0`), take the first 12 as
   A and the next 12 as B. The category mix was checked rather than forced:
 
@@ -228,8 +216,10 @@ the task is usable, but it's a reminder that grading needs a timeout.
   | A | 3 | 5 | 3 | 1 |
   | B | 2 | 4 | 5 | 1 |
 
+- **Design-disjoint vs task-disjoint**: I noticed that some designs were reused across the different bug types. I considered a split that was both task and design disjoint, but then set B wouldn't have any relevant lessons based on design to reference from. The lessons would be too disjoint from set B to be useful. 
+- 
 - **Size:** 12 / 12 instead of 20 / 20 to leave time for the KB comparison and for reading
-  trajectories closely (quality over quantity).
+  trajectories closely. 
 
 ### 6. Agent harness
 

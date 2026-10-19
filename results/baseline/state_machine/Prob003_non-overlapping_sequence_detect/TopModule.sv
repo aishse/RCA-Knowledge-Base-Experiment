@@ -31,7 +31,7 @@ begin
         pstate<=nstate;
 end
 
-always @(pstate or data)
+always @(*)
 begin
     case(pstate)
         idle:
@@ -70,7 +70,7 @@ end
 
 always @(*)
 begin
-	if(!rst_n) 
+    if(!rst_n==1) 
 		begin
 			match=1'b0;
 			not_match = 1'b0;

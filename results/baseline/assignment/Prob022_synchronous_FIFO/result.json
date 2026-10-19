@@ -1,1 +1,1 @@
-{"task": "tasks/assignment/Prob022_synchronous_FIFO", "passed": true, "mismatches": 0, "seconds": 30.75650899996981, "input_tokens": 106002, "output_tokens": 2449, "commands": 4, "leak_suspected": false}
+{"task": "tasks/assignment/Prob022_synchronous_FIFO", "passed": true, "mismatches": 0, "seconds": 32.888353457907215, "input_tokens": 127186, "output_tokens": 2510, "commands": 5, "leak_suspected": false}

@@ -11,8 +11,8 @@ module TopModule(
 	output reg [3:0]read_data
 );
     reg [3:0] myRAM [7:0];
-    
     integer i;
+
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n)
             for(i=0;i<8;i=i+1)
@@ -20,10 +20,11 @@ module TopModule(
         else if(write_en)
             myRAM[write_addr[2:0]] <= write_data;
     end
+
     always@(posedge clk or negedge rst_n) begin
         if(~rst_n)
             read_data <= 0;
-        else
-            read_data <= read_en ? myRAM[read_addr[2:0]] : read_data;
+        else if(read_en)
+            read_data <= myRAM[read_addr[2:0]];
     end
 endmodule

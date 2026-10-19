@@ -1,1 +1,1 @@
-{"task": "tasks/state_machine/Prob003_non-overlapping_sequence_detect", "passed": true, "mismatches": 0, "seconds": 36.06918324995786, "input_tokens": 106501, "output_tokens": 3009, "commands": 4, "leak_suspected": false}
+{"task": "tasks/state_machine/Prob003_non-overlapping_sequence_detect", "passed": true, "mismatches": 0, "seconds": 53.74563362519257, "input_tokens": 231518, "output_tokens": 4203, "commands": 10, "leak_suspected": false}

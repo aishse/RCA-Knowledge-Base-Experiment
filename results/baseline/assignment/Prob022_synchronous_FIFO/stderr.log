@@ -1,2 +1,2 @@
 Reading additional input from stdin...
-2026-10-19T00:06:07.853730Z ERROR codex_core::tools::router: error=exec_command failed: CreateProcess { message: "Rejected(\"`/bin/zsh -lc \\\"rm -f tb_fifo.sv tb_fifo.out && nl -ba TopModule.sv | sed -n '1,120p'\\\"` rejected: rm -f style commands are not permitted. Use a safer approach\")" }
+2026-10-19T04:27:28.740390Z ERROR codex_core::tools::router: error=exec_command failed: CreateProcess { message: "Rejected(\"`/bin/zsh -lc \\\"rm -f tb.sv simv && nl -ba TopModule.sv | sed -n '1,120p' && printf '\\\\\\\\nAGENTS search:\\\\\\\\n' && rg --files -g 'AGENTS.md' . .. 2>/dev/null\\\"` rejected: rm -f style commands are not permitted. Use a safer approach\")" }

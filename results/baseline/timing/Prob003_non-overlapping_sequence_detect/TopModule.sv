@@ -72,16 +72,14 @@ always @(*) begin
 	match = 1'b0;
 	not_match = 1'b0;
 
-	if (rst_n) begin
-		case (pstate)
-			s6:  match = 1'b1;
-			sf6: not_match = 1'b1;
-			default: begin
-				match = 1'b0;
-				not_match = 1'b0;
-			end
-		endcase
-	end
+	case (pstate)
+		s6:  match = 1'b1;
+		sf6: not_match = 1'b1;
+		default: begin
+			match = 1'b0;
+			not_match = 1'b0;
+		end
+	endcase
 end
 
 endmodule

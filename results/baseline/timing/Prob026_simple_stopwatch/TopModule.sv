@@ -20,11 +20,11 @@ module TopModule(
 		else if (second == 6'd60)
 			begin
 				second <= 6'd1;
-				minute <= minute + 6'd1;
+				minute <= minute + 1'd1;
 			end
 		else
 			begin
-				second <= second + 6'd1;
+				second <= second + 1'd1;
 				minute <= minute;
 			end
 endmodule

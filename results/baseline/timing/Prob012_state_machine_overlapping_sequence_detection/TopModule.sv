@@ -29,11 +29,11 @@ module TopModule(
             endcase
     end
     
-    always @(*) begin
+    always @(posedge clk or negedge rst) begin
       if (~rst)
-        flag = 1'b0;
+        flag <= 1'b0;
       else
-        flag = (state == S4);
+        flag <= (state == S4);
     end
 
 

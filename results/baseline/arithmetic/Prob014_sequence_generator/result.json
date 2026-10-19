@@ -1,1 +1,1 @@
-{"task": "tasks/arithmetic/Prob014_sequence_generator", "passed": true, "mismatches": 0, "seconds": 22.497089749900624, "input_tokens": 79077, "output_tokens": 1522, "commands": 3, "leak_suspected": false}
+{"task": "tasks/arithmetic/Prob014_sequence_generator", "passed": true, "mismatches": 0, "seconds": 27.20184541703202, "input_tokens": 148279, "output_tokens": 1940, "commands": 6, "leak_suspected": false}
